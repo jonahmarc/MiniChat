@@ -1,0 +1,24 @@
+@font-face {
+    font-family: "Lucida Grande";
+    src: url('../src/fonts/LucidaGrande.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: "Lucida Grande Bold";
+    src: url('../src/fonts/LucidaGrandeBold.ttf') format("truetype");
+}
+
+$font-family-base: "Lucida Grande";
+$font-family-sec: "Lucida Grande Bold";
+
+$primary: #0c0ca0;
+
+
+
+@import "~bootstrap/scss/_functions.scss";
+@import "~bootstrap/scss/_variables.scss";
+@import "~bootstrap/scss/_maps.scss";
+@import "~bootstrap/scss/_mixins.scss";
+@import "~bootstrap/scss/_root.scss";
+
+@import "~bootstrap/scss/bootstrap";

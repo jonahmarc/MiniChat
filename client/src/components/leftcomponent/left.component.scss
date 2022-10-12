@@ -1,0 +1,39 @@
+@import '../../custom.scss';
+
+.left_container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    .create_search {
+        width: 100%;
+        height: 10%;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 0 10px 0 !important;
+        border-bottom: 1px solid $primary;
+    }
+
+    .menu {
+        width: 100%;
+        height: 85%;
+        margin-top: 10px;
+        overflow-y: auto;
+
+    }
+
+    .logout {
+        width: 100%;
+        height: 5%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .btn {
+            width: 50%;
+            border-style: none;
+        }
+    }
+}
