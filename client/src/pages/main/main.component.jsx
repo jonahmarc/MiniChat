@@ -1,11 +1,10 @@
-import { Stack } from "react-bootstrap";
-
 import './main.component.scss';
 
 import LeftComponent from "../../components/leftcomponent/left.component";
 import Chat from "../../components/rightcomponent/chat/chat.component";
 
 const Main = () => {
+    
     return (
         <div className="main_container">
             <div className="chat_app">

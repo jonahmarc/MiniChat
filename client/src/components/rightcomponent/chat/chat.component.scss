@@ -18,5 +18,11 @@
 
     .input {
         height: 10%;
+
+        .emoji_picker {
+            position: fixed !important;
+            margin-bottom: 500px !important;
+            overflow: auto !important;
+        }
     }
 }

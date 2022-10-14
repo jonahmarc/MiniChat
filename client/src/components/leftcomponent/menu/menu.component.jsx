@@ -15,7 +15,7 @@ const Menu = () => {
       <Tab eventKey="joined" title="Joined" className='joined'>
         <RoomsList />
       </Tab>
-      <Tab eventKey="listrooms" title="List Rooms">
+      <Tab eventKey="listrooms" title="Rooms">
         <RoomsList />
       </Tab>
       <Tab eventKey="profile" title="Profile">
