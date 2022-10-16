@@ -14,11 +14,11 @@ const RoomsList = (props) => {
     let check= allChecked;
 
     useEffect(()=>{
-        console.log(allChecked);
+        // console.log(allChecked);
     },[allChecked] )
     
     useEffect(()=>{
-        console.log(checked);
+        // console.log(checked);
     },[checked] )
 
     const handleAllChecked = (e) => {
