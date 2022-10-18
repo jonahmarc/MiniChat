@@ -1,8 +1,7 @@
 package com.example.kachat.sample.repository.message.file;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -10,10 +9,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FileRepository {
 
-    @Autowired
     private final MongoTemplate mongoTemplate;
 
     public int addItemToMetadata(ObjectId fileId, String key, Object value) {
