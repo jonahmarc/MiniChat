@@ -10,11 +10,15 @@ import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, String>, CustomUserRepository {
 
-    @Query(value = "{ 'user_name': ?0 }", fields = "{ '_id': 1, 'user_name': 1, 'display_name': 1 }")
+    @Query(value = "{ 'user_name': ?0 }")
     Optional<User> findByUserName(String userName);
 
     @Query(value = "{ '_id': ?0, 'joined_rooms': ?1 }")
     Optional<User> findByIdContainingRoom(String userId, ObjectId roomId);
+
+    @Query(value = "{ '_id': ?0 }")
+    @Update(value = "{ '$set': { 'online': ?1 } }")
+    int updateOnlineStatus(String userId, boolean status);
 
     @Query(value = "{ '_id': ?0 }")
     @Update(value = "{ '$set': { 'display_name': ?1 } }")

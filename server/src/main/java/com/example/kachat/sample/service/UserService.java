@@ -2,11 +2,13 @@ package com.example.kachat.sample.service;
 
 import com.example.kachat.sample.model.User;
 import com.example.kachat.sample.repository.user.UserRepository;
+import com.example.kachat.sample.util.PasswordEncoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mongodb.MongoException;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -24,34 +26,71 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    public boolean saveUser(User user) {
+        if (user.getUserName() != null && user.getPassword() != null) {
+            // Register only when username is unique
+            Optional<User> userOptional = userRepository.findByUserName(user.getUserName());
+
+            if (userOptional.isEmpty()) {
+                // Generate the salt value. It can be stored in a database.
+                String saltValue = PasswordEncoder.getSaltvalue(30);
+
+                // Generate an encrypted password
+                String encryptedPassword = PasswordEncoder.generateSecurePassword(user.getPassword(), saltValue);
+                user.setPassword(encryptedPassword);
+                user.setSaltValue(saltValue);
+
+                // Insert other user details
+                user.setDisplayName(user.getUserName());
+                user.setCreatedAt(LocalDateTime.now());
+                user.setJoinedRooms(new ArrayList<>());
+
+                return userRepository.save(user) != null ? true : false;
+            }
+        }
+
+        // If credentials are invalid, return empty
+        return false;
+    }
+
     public List<User> getAllUserDetails() {
         return userRepository.findAll();
     }
 
-    public Document getUserId(String userName) {
-        // Create user only if it does not exist in the database
-        Optional<User> userOptional = userRepository.findByUserName(userName);
+    @Transactional
+    public Optional<Document> login(User user) throws MongoException {
+        // Check if user is present in the database
+        Optional<User> userOptional = userRepository.findByUserName(user.getUserName());
         Document userDocument = new Document();
 
-        if (userOptional.isEmpty()) {
-            User newUser = new User();
+        if (userOptional.isPresent()) {
+            User retrievedUser = userOptional.get();
 
-            // Insert user details
-            newUser.setUserName(userName);
-            newUser.setDisplayName(userName);
-            newUser.setCreatedAt(LocalDateTime.now());
-            newUser.setJoinedRooms(new ArrayList<>());
+            // Generate the salt value. It can be stored in a database.
+            String saltValue = retrievedUser.getSaltValue();
 
-            // Save the created user and retrieve the result from the database
-            User savedUser = userRepository.save(newUser);
-            System.out.println(savedUser);
+            // Verify the entered password and encrypted password
+            boolean status = PasswordEncoder.verifyUserPassword(user.getPassword(), retrievedUser.getPassword(), saltValue);
 
-            // Return only the _id as user_id
-            return userDocument.append("user_id", savedUser.getId());
+            if(status){
+                // Set online to true
+                int modifiedCount = userRepository.updateOnlineStatus(retrievedUser.getId(), true);
+
+                if (modifiedCount == 1) {
+                    // Return only the _id as user_id
+                    return Optional.of(userDocument.append("user_id", retrievedUser.getId()));
+                } else {
+                    throw new MongoException("Cannot update user's online status.");
+                }
+            }
         }
 
-        // If user exists, return _id as user_id
-        return userDocument.append("user_id", userOptional.get().getId());
+        // If invalid or not present
+        return Optional.empty();
+    }
+
+    public boolean logout(String userId) {
+        return userRepository.updateOnlineStatus(userId, false) == 1 ? true : false;
     }
 
     public Optional<Document> getDisplayName(String userId) {

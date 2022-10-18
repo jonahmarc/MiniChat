@@ -25,9 +25,17 @@ public class User {
     @JsonProperty(value = "user_name")
     private String userName;
 
+    private String password;
+
+    @Field(value = "salt_value")
+    @JsonProperty(value = "salt_value")
+    private String saltValue;
+
     @Field(value = "display_name")
     @JsonProperty(value = "display_name")
     private String displayName;
+
+    private boolean online;
 
     @Field(value = "created_at")
     @JsonProperty(value = "created_at")

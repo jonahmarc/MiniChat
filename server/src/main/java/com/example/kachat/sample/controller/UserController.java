@@ -5,6 +5,7 @@ import com.example.kachat.sample.model.response.ResponseEntityBody;
 import com.example.kachat.sample.model.User;
 import com.example.kachat.sample.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mongodb.MongoException;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.http.HttpStatus;
@@ -26,15 +27,64 @@ public class UserController {
         return userService.getAllUserDetails();
     }
 
-    @PostMapping(value = "login/{user_name}")
-    public ResponseEntity<ResponseEntityBody> userLogin(@PathVariable(value = "user_name") String userName) {
-        // Retrieve result from service
-        Document data = userService.getUserId(userName);
+    @PostMapping(value = "register")
+    public ResponseEntity<ResponseEntityBody> userRegister(@RequestBody User user) {
+        // Initialize ResponseEntityBody
+        HttpStatus status;
+        ResponseDetails responseDetails = new ResponseDetails();
+        ResponseEntityBody response = new ResponseEntityBody();
 
-        // Create the response
-        HttpStatus status = HttpStatus.OK;
-        ResponseDetails responseDetails = new ResponseDetails(status.value(), status.getReasonPhrase() + ": User has been retrieved successfully.");
-        ResponseEntityBody response = new ResponseEntityBody(data, responseDetails);
+        // Retrieve result from service
+        boolean registerResult = userService.saveUser(user);
+
+        if (registerResult) {
+            status = HttpStatus.OK;
+
+            responseDetails.setMessage(status.getReasonPhrase() + ": User has been registered successfully.");
+        } else {
+            // Indicate status 503
+            status = HttpStatus.SERVICE_UNAVAILABLE;
+
+            responseDetails.setMessage(status.getReasonPhrase() + ": Cannot register user. Username may be taken.");
+        }
+
+        responseDetails.setStatusCode(status.value());
+        response.setResponseDetails(responseDetails);
+
+        return new ResponseEntity<>(response, status);
+    }
+
+    @GetMapping(value = "login")
+    public ResponseEntity<ResponseEntityBody> userLogin(@RequestBody User user) {
+        // Initialize ResponseEntityBody
+        HttpStatus status;
+        ResponseDetails responseDetails = new ResponseDetails();
+        ResponseEntityBody response = new ResponseEntityBody();
+
+        // Retrieve result from service
+        Optional<Document> dataOptional = userService.login(user);
+
+        try {
+            if (dataOptional.isPresent()) {
+                status = HttpStatus.OK;
+
+                responseDetails.setMessage(status.getReasonPhrase() + ": User has logged in successfully.");
+                response.setData(dataOptional.get());
+            } else {
+                // If invalid login credentials
+                status = HttpStatus.BAD_REQUEST;
+
+                responseDetails.setMessage(status.getReasonPhrase() + ": Username or password is invalid. No such user exists.");
+            }
+        } catch (MongoException e) {
+            // Indicate status 503 and message from the error
+            status = HttpStatus.SERVICE_UNAVAILABLE;
+
+            responseDetails.setMessage(status.getReasonPhrase() + ": " + e.getMessage());
+        }
+
+        responseDetails.setStatusCode(status.value());
+        response.setResponseDetails(responseDetails);
 
         return new ResponseEntity<>(response, status);
     }
@@ -129,4 +179,32 @@ public class UserController {
 
         return new ResponseEntity<>(response, status);
     }
+
+    @PutMapping(value = "logout/{user_id}")
+    public ResponseEntity<ResponseEntityBody> userLogout(@PathVariable(value = "user_id") String userId) {
+        // Initialize ResponseEntityBody
+        HttpStatus status;
+        ResponseDetails responseDetails = new ResponseDetails();
+        ResponseEntityBody response = new ResponseEntityBody();
+
+        // Retrieve result from service
+        boolean logoutResult = userService.logout(userId);
+
+        if (logoutResult) {
+            status = HttpStatus.OK;
+
+            responseDetails.setMessage(status.getReasonPhrase() + ": User has logged out successfully.");
+        } else {
+            // Indicate status 503
+            status = HttpStatus.SERVICE_UNAVAILABLE;
+
+            responseDetails.setMessage(status.getReasonPhrase() + ": User cannot logout.");
+        }
+
+        responseDetails.setStatusCode(status.value());
+        response.setResponseDetails(responseDetails);
+
+        return new ResponseEntity<>(response, status);
+    }
+
 }
