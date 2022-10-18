@@ -27,6 +27,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     public boolean saveUser(User user) {
+        boolean saveResult = false;
+
         if (user.getUserName() != null && user.getPassword() != null) {
             // Register only when username is unique
             Optional<User> userOptional = userRepository.findByUserName(user.getUserName());
@@ -45,12 +47,12 @@ public class UserService {
                 user.setCreatedAt(LocalDateTime.now());
                 user.setJoinedRooms(new ArrayList<>());
 
-                return userRepository.save(user) != null ? true : false;
+                saveResult = userRepository.save(user) != null ? true : false;
             }
         }
 
-        // If credentials are invalid, return empty
-        return false;
+        // If credentials are invalid, return false
+        return saveResult;
     }
 
     public List<User> getAllUserDetails() {
@@ -73,10 +75,8 @@ public class UserService {
             boolean status = PasswordEncoder.verifyUserPassword(user.getPassword(), retrievedUser.getPassword(), saltValue);
 
             if(status){
-                // Set online to true
-                int modifiedCount = userRepository.updateOnlineStatus(retrievedUser.getId(), true);
-
-                if (modifiedCount == 1) {
+                // Return user_id if user is already online or if user's online status was modified successfully.
+                if (retrievedUser.isOnline() || (userRepository.updateOnlineStatus(retrievedUser.getId(), true) == 1)) {
                     // Return only the _id as user_id
                     return Optional.of(userDocument.append("user_id", retrievedUser.getId()));
                 } else {
@@ -90,7 +90,19 @@ public class UserService {
     }
 
     public boolean logout(String userId) {
-        return userRepository.updateOnlineStatus(userId, false) == 1 ? true : false;
+        boolean logoutResult = false;
+
+        // Obtain user from database
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isPresent()) {
+            User retrievedUser = userOptional.get();
+
+            // Return boolean result of logout
+            logoutResult = (!retrievedUser.isOnline() || (userRepository.updateOnlineStatus(userId, false) == 1)) ? true : false;
+        }
+
+        return logoutResult;
     }
 
     public Optional<Document> getDisplayName(String userId) {
