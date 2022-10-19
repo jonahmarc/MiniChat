@@ -160,6 +160,7 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
                         .andApply(document -> new Document()
                                 .append("user_name", "$$member.user_name")
                                 .append("display_name", "$$member.display_name")
+                                .append("online", "$$member.online")
                         )
                 ).as("members");
 
