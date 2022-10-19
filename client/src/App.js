@@ -19,7 +19,7 @@ class App extends React.Component {
       <AppContext.Provider value={{stompClient}}>
       <div>
         <Routes>
-          {/* <Route exact path='/' element={<Navigate replace to='/login' />} /> */}
+         {/*  <Route exact path='/' element={<Navigate replace to='/login' />} /> */}
           <Route
             exact
             path='/'  

@@ -4,13 +4,14 @@ import { Button, ListGroup } from "react-bootstrap";
 
 import "./list.component.scss";
 import { connect } from "react-redux";
+import { setCurrentRoom } from "../../../redux/room/room.action";
 
 import { AppContext, stompClient } from "../../../context/appContext";
 import ManageChatRoom from "../manage/manage.component";
 import { useContext } from "react";
 import { onMessageReceived } from "../messages/message-history.component";
 
-const RoomsList = (props,{ setCurrentRoom }) => {
+const RoomsList = (props, { setCurrentRoom }) => {
   const { roomName, setRoomName } = useContext(AppContext);
   const [allChecked, setAllChecked] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -18,26 +19,27 @@ const RoomsList = (props,{ setCurrentRoom }) => {
   let check = allChecked;
 
   const [roomData, setRoomData] = useState([]);
+
+
+  //*
+  const onConnected = () => {
+    //!stompClient.subscribe('/chatroom/'+props.roomName, onMessageReceived)
+    stompClient.subscribe("/chatroom/" + props.roomName, onMessageReceived);
+    //setRoomName(props.roomName)
+  };
+  
   useEffect(() => {
-    fetch("http://localhost:8081/kachat/rooms/6344bdc8238f801b0124710d")
+    fetch("http://localhost:8080/kachat/rooms/634d20e14173ec4c9fd9e402")
       .then((res) => res.json())
       .then((result) => {
         setRoomData(result.data.rooms_list);
       });
   }, []);
-
-  //*
-  const onConnected = () => {
-    //!stompClient.subscribe('/chatroom/'+props.roomName, onMessageReceived)
-    stompClient.subscribe("/chatroom/"+props.roomName, onMessageReceived);
-    //setRoomName(props.roomName)
-  };
-
   const roomClicked = (e) => {
     console.log("clicked");
-    console.log("roomName: ");
-    setCurrentRoom(e);
-    onConnected();
+    console.log("roomName: ",e.target.innerText);
+    // setCurrentRoom();
+    // onConnected();
   };
   //*
 
@@ -98,35 +100,33 @@ const RoomsList = (props,{ setCurrentRoom }) => {
       <i class="bi bi-check-circle-fill text-success" variant="success"></i>
     );
   }
-
   return (
-    <>
-        <ListGroup className="rooms_list">
-        {roomData.map((room) => {
-                {selectAll}
-                <ListGroup.Item
-                action
-                variant="light"
-                className="d-grid gap-2 d-flex align-items-center justify-content-start"
-                onClick={roomClicked}
-                >
-                {checkbox}
-                {joined}
-                <figure className="d-flex flex-column align-items-center m-0 p-0">
-                    <blockquote class="blockquote m-0 p-0">
-                    <h6>{room.name}</h6>
-                    </blockquote>
-                    <figcaption class="blockquote-footer m-0 p-0">
-                    {room.owner.display_owner}
-                    </figcaption>
-                </figure>
-                <i className="ms-auto bi bi-lock-fill"></i>
-                {/* <i class="bi bi-unlock"></i> */}
-                {manage}
-                </ListGroup.Item>
-        })}
-        </ListGroup>
-    </>
+    <ListGroup className="rooms_list">
+      {selectAll}
+      {roomData.map((room) => (
+        <ListGroup.Item
+          action
+          variant="light"
+          key={room.id}
+          className="d-grid gap-2 d-flex align-items-center justify-content-start"
+          onClick={roomClicked}
+        >
+          {checkbox}
+          {joined}
+          <figure className="d-flex flex-column align-items-center m-0 p-0">
+            <blockquote class="blockquote m-0 p-0">
+              <h6>{room.name}</h6>
+            </blockquote>
+            <figcaption class="blockquote-footer m-0 p-0">
+              {room.owner.display_name}
+            </figcaption>
+          </figure>
+          <i className="ms-auto bi bi-lock-fill"></i>
+          {/* <i class="bi bi-unlock"></i> */}
+          {manage}
+        </ListGroup.Item>
+      ))}
+    </ListGroup>
   );
 };
 
@@ -135,3 +135,15 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(null, mapDispatchToProps)(RoomsList);
+{
+  /* <figure className="d-flex flex-column align-items-center m-0 p-0">
+<blockquote class="blockquote m-0 p-0">
+<h6>{room.name}</h6>
+</blockquote>
+<figcaption class="blockquote-footer m-0 p-0">
+{room.owner.display_name}
+</figcaption>
+</figure>
+<i className="ms-auto bi bi-lock-fill"></i>
+<i class="bi bi-unlock"></i> */
+}

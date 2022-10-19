@@ -15,7 +15,7 @@ const ManageChatRoom = (props) => {
         password: roomData.password,
       };
       //!fetch("http://localhost:8080/kachat/rooms/634d20e14173ec4c9fd9e402" FOR THE FINAL SERVER
-      fetch("http://localhost:8081/kachat/rooms/6344bdc8238f801b0124710d",{
+      fetch("http://localhost:8080/kachat/rooms/634d20e14173ec4c9fd9e402",{
       method:"POST",
       headers:{"Content-type":"application/json"},
       body:JSON.stringify(newRoomData)

@@ -40,7 +40,8 @@ const Chat = () => {
 
   //*
   const onSubmit = () => {
-    //! code for sending a msg, get the current roomName via redux 
+    //* Get Room name from redux 
+    //! code for sending a msg, 
     // if(stompClient){
     //     const chatMessage = {
     //         senderName: userData.username,

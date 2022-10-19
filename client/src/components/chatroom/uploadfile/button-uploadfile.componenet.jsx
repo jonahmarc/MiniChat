@@ -15,6 +15,7 @@ const UploadFile = () => {
   }
   const handleDisplayFileDetails = () => {
     inputFile?.files && setUploadedFileName(inputFile.files[0].name)
+    
     console.log(inputFile?.files);
   }
 
