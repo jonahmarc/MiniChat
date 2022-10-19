@@ -1,20 +1,22 @@
-
+import { useState, useEffect } from "react";
 import React from 'react';
 import './App.css';
 import { Routes, Route, Navigate, Switch } from 'react-router-dom';
 import Login from './pages/login/login.component';
 import Main from './pages/main/main.component';
 import { connect } from 'react-redux';
+import {AppContext, stompClient} from './context/appContext'
+
 
 class App extends React.Component {
-  
+    
   componentDidMount() {
     console.log(this.props.currentUser)
   }
-
   render() {
+   
     return (
-
+      <AppContext.Provider value={{stompClient}}>
       <div>
         <Routes>
           <Route
@@ -30,6 +32,7 @@ class App extends React.Component {
               />
         </Routes>
       </div>
+      </AppContext.Provider>
 
     );
   }

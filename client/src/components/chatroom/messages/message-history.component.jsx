@@ -2,6 +2,16 @@ import { Stack } from 'react-bootstrap';
 
 import './message-history.component.scss';
 
+
+const data = []
+
+//! display the messages to the DOM
+export const onMessageReceived = (payload) =>{
+    const payloadData = JSON.parse(payload.body)
+    console.log("MESSAGE: ", payloadData )
+    data.push(payloadData)
+}
+
 const Messages = () => {
     return (
         <div className='messages_history mt-2 p-0 d-flex flex-column'>
