@@ -43,7 +43,7 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
                 .andInclude("name", "private", "password")
                 .and(VariableOperators.mapItemsOf("owner")
                         .as("owner")
-                        .andApply(document -> new Document("user_name", "$$owner.user_name")
+                        .andApply(document -> new Document("username", "$$owner.username")
                                 .append("display_name", "$$owner.display_name"))).as("owner")
                 .and(ArrayOperators.arrayOf("members")
                         .containsValue(new ObjectId(userId))).as("joined");
@@ -120,7 +120,7 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
                 .andInclude("name", "private", "password")
                 .and(VariableOperators.mapItemsOf("owner")
                         .as("owner")
-                        .andApply(document -> new Document("user_name", "$$owner.user_name")
+                        .andApply(document -> new Document("username", "$$owner.username")
                                 .append("display_name", "$$owner.display_name"))).as("owner");
         UnwindOperation cleanUp = Aggregation.unwind("owner");
 
@@ -158,7 +158,7 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
                 .and(VariableOperators.mapItemsOf("members")
                         .as("member")
                         .andApply(document -> new Document()
-                                .append("user_name", "$$member.user_name")
+                                .append("username", "$$member.username")
                                 .append("display_name", "$$member.display_name")
                                 .append("online", "$$member.online")
                         )
@@ -267,7 +267,7 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
                                                                 new Document("$toString", "$$message._id")
                                                         )
                                                                 .append("user",
-                                                                        new Document("user_name", "$$message.user.user_name")
+                                                                        new Document("username", "$$message.user.username")
                                                                                 .append("display_name", "$$message.user.display_name")
                                                                 )
                                                                 .append("status", "$$message.status")

@@ -29,9 +29,9 @@ public class UserService {
     public boolean saveUser(User user) {
         boolean saveResult = false;
 
-        if (user.getUserName() != null && user.getPassword() != null) {
+        if (user.getUsername() != null && user.getPassword() != null) {
             // Register only when username is unique
-            Optional<User> userOptional = userRepository.findByUserName(user.getUserName());
+            Optional<User> userOptional = userRepository.findByUsername(user.getUsername());
 
             if (userOptional.isEmpty()) {
                 // Generate the salt value. It can be stored in a database.
@@ -43,7 +43,7 @@ public class UserService {
                 user.setSaltValue(saltValue);
 
                 // Insert other user details
-                user.setDisplayName(user.getUserName());
+                user.setDisplayName(user.getUsername());
                 user.setCreatedAt(LocalDateTime.now());
                 user.setJoinedRooms(new ArrayList<>());
 
@@ -62,7 +62,7 @@ public class UserService {
     @Transactional
     public Optional<Document> login(User user) throws MongoException {
         // Check if user is present in the database
-        Optional<User> userOptional = userRepository.findByUserName(user.getUserName());
+        Optional<User> userOptional = userRepository.findByUsername(user.getUsername());
         Document userDocument = new Document();
 
         if (userOptional.isPresent()) {
@@ -75,10 +75,14 @@ public class UserService {
             boolean status = PasswordEncoder.verifyUserPassword(user.getPassword(), retrievedUser.getPassword(), saltValue);
 
             if(status){
-                // Return user_id if user is already online or if user's online status was modified successfully.
+                // Return user_id, username and display_name if user is already online or if user's online status was modified successfully.
                 if (retrievedUser.isOnline() || (userRepository.updateOnlineStatus(retrievedUser.getId(), true) == 1)) {
-                    // Return only the _id as user_id
-                    return Optional.of(userDocument.append("user_id", retrievedUser.getId()));
+                    userDocument
+                            .append("user_id", retrievedUser.getId())
+                            .append("username", retrievedUser.getUsername())
+                            .append("display_name", retrievedUser.getDisplayName());
+
+                    return Optional.of(userDocument);
                 } else {
                     throw new MongoException("Cannot update user's online status.");
                 }

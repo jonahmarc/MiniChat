@@ -29,7 +29,7 @@ public class CustomMessageRepositoryImpl implements CustomMessageRepository {
                 .andExclude("_id")
                 .and(document -> new Document("$toString", "$_id")).as("message_id")
                 .andInclude("status", "content", "sent_at")
-                .and(document -> new Document("user_name", "$user.user_name")
+                .and(document -> new Document("username", "$user.username")
                         .append("display_name", "$user.display_name")).as("user")
                 .and(VariableOperators.mapItemsOf("files")
                         .as("file")

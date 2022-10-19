@@ -21,9 +21,7 @@ public class User {
     @Id
     private String id;
 
-    @Field(value = "user_name")
-    @JsonProperty(value = "user_name")
-    private String userName;
+    private String username;
 
     private String password;
 
@@ -49,7 +47,7 @@ public class User {
     public String toString() {
         return "{" +
                 "_id: '" + id + '\'' +
-                ", user_name: '" + userName + '\'' +
+                ", username: '" + username + '\'' +
                 ", display_name: '" + displayName + '\'' +
                 ", created_at: " + createdAt +
                 ", joined_rooms: " + joinedRooms +
