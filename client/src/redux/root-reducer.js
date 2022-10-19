@@ -5,5 +5,5 @@ import roomReducer from './room/room.reducer';
 
 export default combineReducers({
     user: userReducer,
-    room:roomReducer
+    room: roomReducer
 });

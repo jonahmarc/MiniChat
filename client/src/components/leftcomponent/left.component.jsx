@@ -32,7 +32,7 @@ const LeftComponent = ( { logoutUser } ) => {
             </div>
             <div className="logout">
                 <Button className="btn" variant="outline-primary" onClick={handleLogout}>
-                <i class="bi bi-box-arrow-left">  LOGOUT</i></Button>
+                <i className="bi bi-box-arrow-left">  LOGOUT</i></Button>
             </div>
         </div>
     );

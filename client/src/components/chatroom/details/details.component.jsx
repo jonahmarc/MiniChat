@@ -30,7 +30,7 @@ const Details = () => {
     return (
         <>
             <Button variant='light' onClick={handleShow}>
-                <i class="bi bi-three-dots-vertical">
+                <i className="bi bi-three-dots-vertical">
             </i></Button>
 
             <Modal centered='true' show={show} onHide={handleClose}>

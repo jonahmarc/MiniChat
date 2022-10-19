@@ -16,10 +16,8 @@ class App extends React.Component {
   render() {
    
     return (
-      <AppContext.Provider value={{stompClient}}>
       <div>
         <Routes>
-          {/* <Route exact path='/' element={<Navigate replace to='/login' />} /> */}
           <Route
             exact
             path='/'  
@@ -31,14 +29,18 @@ class App extends React.Component {
               )
             }
               />
-          {/* {this.props.currentUser } */}
         </Routes>
       </div>
-      </AppContext.Provider>
 
     );
   }
 }
+
+const mapStateToProps = ({user}) => ({
+  currentUser: user.currentUser
+});
+
+export default connect(mapStateToProps)(App);
 
 
 // function App( {currentUser} ) {
@@ -78,9 +80,3 @@ class App extends React.Component {
     
 //   );
 // }
-
-const mapStateToProps = ({user}) => ({
-  currentUser: user.currentUser
-});
-
-export default connect(mapStateToProps)(App);

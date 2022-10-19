@@ -9,10 +9,10 @@ import Details from "../../chatroom/details/details.component";
 import Messages from "../../chatroom/messages/message-history.component";
 import UploadFile from "../../chatroom/uploadfile/button-uploadfile.componenet";
 import { useContext } from "react";
-import { AppContext } from "../../../context/appContext";
+// import { AppContext } from "../../../context/appContext";
 
 const Chat = () => {
-  const {stompClient} = useContext(AppContext)
+  // const {stompClient} = useContext(AppContext)
   const [userData, setUserData] = useState({
     username: "Prince",
     receiverName: "Mervin",
@@ -67,7 +67,7 @@ const Chat = () => {
       <div className="input d-grid gap-2 d-flex align-items-center justify-content-start">
         <UploadFile />
         <Button variant="light" type="" onClick={togglePicker}>
-          <i class="bi bi-emoji-smile"></i>
+          <i className="bi bi-emoji-smile"></i>
         </Button>
         {pickerOpen && (
           <Suspense fallback={<p id="loading">loading</p>}>
@@ -85,7 +85,7 @@ const Chat = () => {
             placeholder="Enter  Message"
           />
           <Button variant="primary" type="submit" onClick={onSubmit} >
-            <i class="bi bi-send-fill"></i>
+            <i className="bi bi-send-fill"></i>
           </Button>
           {/* <Button variant="light" type='file'><i class="bi bi-file-earmark"></i></Button> */}
           {/* <Form.Group controlId="formBasicEmail" className="me-auto"> */}
