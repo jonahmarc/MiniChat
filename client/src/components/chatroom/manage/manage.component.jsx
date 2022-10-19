@@ -26,6 +26,7 @@ const ManageChatRoom = (props) => {
 
     let btn;
     let title;
+    let del;
 
     if(props.type == 'CREATE') {
         btn = <Button onClick={handleShow}>
@@ -38,6 +39,9 @@ const ManageChatRoom = (props) => {
                     <i class="bi bi-gear"></i>
                 </Button>;
         title = "Update";
+        del = <Button  variant="outline-danger" onClick={handleClose}>
+                    DELETE  
+                </Button>;
     }
 
 
@@ -63,6 +67,7 @@ const ManageChatRoom = (props) => {
                             </Form.Group>
                         )}
                         <Form.Group className="d-grid gap-2 d-md-flex justify-content-md-end">
+                            {del}
                             <Button  variant="secondary" onClick={handleClose}>
                                 CANCEL  
                             </Button>

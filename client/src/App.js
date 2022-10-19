@@ -17,7 +17,6 @@ class App extends React.Component {
 
       <div>
         <Routes>
-          {/* <Route exact path='/' element={<Navigate replace to='/login' />} /> */}
           <Route
             exact
             path='/'  
@@ -29,13 +28,18 @@ class App extends React.Component {
               )
             }
               />
-          {/* {this.props.currentUser } */}
         </Routes>
       </div>
 
     );
   }
 }
+
+const mapStateToProps = ({user}) => ({
+  currentUser: user.currentUser
+});
+
+export default connect(mapStateToProps)(App);
 
 
 // function App( {currentUser} ) {
@@ -75,9 +79,3 @@ class App extends React.Component {
     
 //   );
 // }
-
-const mapStateToProps = ({user}) => ({
-  currentUser: user.currentUser
-});
-
-export default connect(mapStateToProps)(App);
