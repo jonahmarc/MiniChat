@@ -24,30 +24,44 @@ public class MessageService {
     private final UserService userService;
 
     public Optional<Document> saveMessage(Message message, MultipartFile... files) throws MongoException {
-        // If user is not a member of the room, return an optional empty
-        boolean roomContainsMember = userService.verifyUserJoinedRooms(message.getUser(), message.getRoom());
-        if (!roomContainsMember) {
-            System.out.println("Not a member.");
-            return Optional.empty();
+        // If message has an ID, verify if it is a saved message.
+        Optional<Document> messageOptional;
+
+        if (message.getId() != null) {
+            messageOptional = messageRepository.findByMessageId(message.getId());
+
+            // If it isn't a saved message, return optional empty
+            if (messageOptional.isEmpty()) {
+                return Optional.empty();
+            }
+        } else {
+            // If user is not a member of the room, return an optional empty
+            boolean roomContainsMember = userService.verifyUserJoinedRooms(message.getUser(), message.getRoom());
+            if (!roomContainsMember) {
+                System.out.println("Not a member.");
+                return Optional.empty();
+            }
+
+            // If files are present, save files and save reference to message object
+            if (files != null) {
+                message.setFiles(fileService.addFiles(files));
+            }
+            message.setSentAt(LocalDateTime.now());
+
+            // Save message to database
+            Message savedMessage = messageRepository.save(message);
+
+            // If no message object returned, delete uploaded files since transactions doesn't work
+            if (savedMessage == null) {
+                fileService.deleteFiles(message.getFiles());
+                System.out.println("Message not saved.");
+                throw new MongoException("Message not saved.");
+            }
+
+            messageOptional = messageRepository.findByMessageId(message.getId());
         }
 
-        // If files are present, save files and save reference to message object
-        if (files != null) {
-            message.setFiles(fileService.addFiles(files));
-        }
-        message.setSentAt(LocalDateTime.now());
-
-        // Save message to database
-        Message savedMessage = messageRepository.save(message);
-
-        // If no message object returned, delete uploaded files since transactions doesn't work
-        if (savedMessage == null) {
-            fileService.deleteFiles(message.getFiles());
-            System.out.println("Message not saved.");
-            throw new MongoException("Message not saved.");
-        }
-
-        return messageRepository.findByMessageId(message.getId());
+        return messageOptional;
     }
 
     @Transactional

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "kachat/messages")
 @RequiredArgsConstructor
 public class MessageController {
 
@@ -27,10 +27,8 @@ public class MessageController {
     private final MessageService messageService;
 
     @MessageMapping(value = "{roomName}")
-    @SendTo(value = "{roomName}")
-    public ResponseEntity<ResponseEntityBody> sendMessage(@DestinationVariable String roomName,
-                                                          @RequestPart(value = "message") Message message,
-                                                          @RequestParam(value = "files", required = false) MultipartFile... files) {
+    @SendTo(value = "chatroom/{roomName}")
+    public ResponseEntity<ResponseEntityBody> receiveMessage(@DestinationVariable String roomName, @Payload Message message) {
         HttpStatus status;
 
         // If roomId and userId is present in the message object, return bad request
@@ -40,7 +38,39 @@ public class MessageController {
         }
 
         // Initialize ResponseEntityBody
-        Document data = null;
+        ResponseDetails responseDetails = new ResponseDetails();
+        ResponseEntityBody response = new ResponseEntityBody();
+
+        // For normal message saving scenario
+        Optional<Document> messageOptional = messageService.saveMessage(message, null);
+        if (messageOptional.isPresent()) {
+            status = HttpStatus.OK;
+            responseDetails.setMessage(status.getReasonPhrase() + ": Message saved successfully.");
+            response.setData(messageOptional.get());
+        } else {
+            // Indicate status 400 and message with "User is not a member of the room."
+            status = HttpStatus.BAD_REQUEST;
+            responseDetails.setMessage(status.getReasonPhrase() + ": Cannot send message.");
+        }
+
+        responseDetails.setStatusCode(status.value());
+        response.setResponseDetails(responseDetails);
+
+        return new ResponseEntity<>(response, status);
+    }
+
+    @PostMapping(value = "kachat/messages")
+    public ResponseEntity<ResponseEntityBody> sendFileAndMessage(@RequestPart(value = "message") Message message,
+                                                                 @RequestParam(value = "files", required = false) MultipartFile... files) {
+        HttpStatus status;
+
+        // If roomId and userId is present in the message object, return bad request
+        if (message.getRoom() == null || message.getUser() == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(null, status);
+        }
+
+        // Initialize ResponseEntityBody
         ResponseDetails responseDetails = new ResponseDetails();
         ResponseEntityBody response = new ResponseEntityBody();
 
@@ -49,10 +79,9 @@ public class MessageController {
             Optional<Document> dataOptional = messageService.saveMessage(message, files);
 
             if (dataOptional.isPresent()) {
-                data = dataOptional.get();
                 status = HttpStatus.OK;
                 responseDetails.setMessage(status.getReasonPhrase() + ": Message saved successfully.");
-                response.setData(data);
+                response.setData(dataOptional.get());
             } else {
                 // Indicate status 400 and message with "User is not a member of the room."
                 status = HttpStatus.BAD_REQUEST;
