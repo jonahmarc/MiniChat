@@ -37,7 +37,7 @@ const UploadFile = () => {
         onClick={handleUpload}
         variant={uploadedFileName ? "success" : "light"}
       >
-        <i class="bi bi-file-earmark"></i>
+        <i className="bi bi-file-earmark"></i>
         {uploadedFileName ? uploadedFileName.slice(0,10) : ''}
       </Button>
       {uploadedFileName && (

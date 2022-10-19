@@ -16,7 +16,6 @@ class App extends React.Component {
   render() {
    
     return (
-      <AppContext.Provider value={{stompClient}}>
       <div>
         <Routes>
           <Route
@@ -32,7 +31,6 @@ class App extends React.Component {
               />
         </Routes>
       </div>
-      </AppContext.Provider>
 
     );
   }

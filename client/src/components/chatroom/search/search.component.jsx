@@ -9,7 +9,7 @@ const SearchRoom = () => {
             <Form.Group controlId="formBasicEmail">
                 <Form.Control type="text" placeholder="Search Roooms"  />
             </Form.Group>
-            <Button variant="light" type='submit'><i class="bi bi-search"></i></Button>
+            <Button variant="light" type='submit'><i className="bi bi-search"></i></Button>
         </Form>
     );
 }
