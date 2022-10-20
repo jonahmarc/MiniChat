@@ -1,28 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import { Button, Modal, ListGroup } from "react-bootstrap";
+import axios from "axios";
+import { connect } from "react-redux";
+
+import { setCurrentRoom } from "../../../redux/room/room.action";
+
+import { Button, Modal, Toast } from "react-bootstrap";
 
 import './leave.component.scss';
 
-const LeaveChatRoom = () => {
+function LeaveChatRoom ({user_id, room_id, setCurrentRoom}) {
     
     const [show, setShow] = useState(false);
+    let toastMessage;
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const [error, setError] = useState("");
 
-    const [checked, setChecked] = useState(false);
+    useEffect (() => {
 
-    const [validated, setValidated] = useState(false);
+    }, [show, error ]);
 
-    const handleSubmit = (event) => {
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-        }
-
-        setValidated(true);
+    const leaveChatRoom = () => {
+        axios.put('http://localhost:8080/kachat/rooms/leave/'+room_id+'?user_id='+user_id)
+        .then( result => {
+            handleClose()
+            setCurrentRoom(null)
+            window.location.reload(false);
+        }).catch( error => {
+            setError(error.response.data.response_details.message)
+        })
     };
 
     return (
@@ -32,15 +40,22 @@ const LeaveChatRoom = () => {
 
             <Modal centered='true' show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    Are you sure you want to leave the room?
+                    Are you sure you want to LEAVE the room?
                 </Modal.Header>
+                {  error && 
+                    <Modal.Body><h6 style={{color: 'red'}}>{error}</h6></Modal.Body>
+                }
                 <Modal.Footer> 
                     <Button  variant="secondary" onClick={handleClose}>CANCEL</Button>
-                    <Button className="ml-5" variant="primary" onClick={handleClose}>YES</Button>
+                    <Button className="ml-5" variant="primary" onClick={leaveChatRoom}>YES</Button>
                 </Modal.Footer>
             </Modal>
         </>
     );
 }
 
-export default LeaveChatRoom;
+const mapDispatchToProps = (dispatch) => ({
+    setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
+});
+
+export default connect(null,mapDispatchToProps)(LeaveChatRoom);

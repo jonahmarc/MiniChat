@@ -14,7 +14,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
       };
     case UserActionTypes.LOGOUT_USER:
       console.log("logoutUser")
-      storage.removeItem('persist:main-root')
+      storage.removeItem('persist:primary')
       return {
         ...state,
         currentUser: null

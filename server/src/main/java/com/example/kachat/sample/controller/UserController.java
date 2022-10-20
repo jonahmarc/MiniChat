@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "kachat/users")
+@RequestMapping(value = "/kachat/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -27,7 +27,8 @@ public class UserController {
         return userService.getAllUserDetails();
     }
 
-    @PostMapping(value = "register")
+    @PostMapping(value = "/register")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> userRegister(@RequestBody User user) {
         // Initialize ResponseEntityBody
         HttpStatus status;
@@ -54,7 +55,8 @@ public class UserController {
         return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping(value = "login")
+    @PostMapping(value = "/login")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> userLogin(@RequestBody User user) {
         // Initialize ResponseEntityBody
         HttpStatus status;
@@ -89,7 +91,8 @@ public class UserController {
         return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping(value = "{user_id}")
+    @GetMapping(value = "/{user_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> loadDisplayName(@PathVariable(value = "user_id") String userId) {
         // Initialize ResponseEntityBody
         HttpStatus status;
@@ -117,7 +120,8 @@ public class UserController {
         return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping(value = "rooms/{user_id}")
+    @GetMapping(value = "/rooms/{user_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> loadCreatedRooms(@PathVariable(value = "user_id") String userId) {
         // Initialize ResponseEntityBody
         HttpStatus status;
@@ -145,7 +149,8 @@ public class UserController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PutMapping(value = "update/{user_id}")
+    @PutMapping(value = "/update/{user_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> changeDisplayName(@PathVariable(value = "user_id") String userId,
                                                                 @RequestBody User user) {
         // Initialize ResponseEntityBody
@@ -180,7 +185,8 @@ public class UserController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PutMapping(value = "logout/{user_id}")
+    @PutMapping(value = "/logout/{user_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> userLogout(@PathVariable(value = "user_id") String userId) {
         // Initialize ResponseEntityBody
         HttpStatus status;

@@ -192,7 +192,7 @@ public class RoomService {
         if (roomModifiedCount != 1) {
             throw new MongoException("Cannot modify room.");
         }
-
+        
         if (userModifiedCount != 1) {
             throw new MongoException("Cannot modify user.");
         }

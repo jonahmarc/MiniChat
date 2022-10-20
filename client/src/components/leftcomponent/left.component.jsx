@@ -4,17 +4,24 @@ import './left.component.scss';
 
 import { connect } from "react-redux";
 import { logoutUser } from "../../redux/user/user.action";
-
 import ManageChatRoom from "../chatroom/manage/manage.component";
 import SearchRoom from "../chatroom/search/search.component";
 import Menu from "./menu/menu.component";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const LeftComponent = ( { logoutUser } ) => {
+function LeftComponent ( { logoutUser, currentUser } ) {
 
     const navigate = useNavigate();
 
     const handleLogout = () => {
+        axios.put('http://localhost:8080/kachat/users/logout/'+currentUser.user_id)
+        .then((result) => {
+            console.log(result.message)
+        }).catch((error) => {
+            console.log(error)
+            alert(error.message)
+        })
         logoutUser();
         navigate('/');
         console.log('logout');
@@ -32,14 +39,18 @@ const LeftComponent = ( { logoutUser } ) => {
             </div>
             <div className="logout">
                 <Button className="btn" variant="outline-primary" onClick={handleLogout}>
-                <i class="bi bi-box-arrow-left">  LOGOUT</i></Button>
+                <i className="bi bi-box-arrow-left">  LOGOUT</i></Button>
             </div>
         </div>
     );
 }
 
+const mapStateToProps = ({user}) => ({
+    currentUser: user.currentUser
+});
+
 const mapDispatchToProps = dispatch => ({
     logoutUser: () => dispatch(logoutUser())
 });
 
-export default connect(null, mapDispatchToProps)(LeftComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(LeftComponent);

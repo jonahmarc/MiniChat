@@ -16,13 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "kachat/rooms")
+@RequestMapping(value = "/kachat/rooms")
 @RequiredArgsConstructor
 public class RoomController {
 
     private final RoomService roomService;
 
-    @GetMapping(value = "{user_id}")
+    @GetMapping(value = "/{user_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> listRooms(@PathVariable(value = "user_id") String userId,
                                                         @RequestParam(value = "search_key", required = false) String searchKey,
                                                         @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
@@ -51,7 +52,8 @@ public class RoomController {
         return new ResponseEntity<>(null, headers, status);
     }
 
-    @GetMapping(value = "joined/{user_id}")
+    @GetMapping(value = "/joined/{user_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> listOfJoinedRooms(@PathVariable(value = "user_id") String userId) {
         HttpStatus status;
 
@@ -77,7 +79,8 @@ public class RoomController {
         return new ResponseEntity<>(null, headers, status);
     }
 
-    @GetMapping(value = "update/{room_id}")
+    @GetMapping(value = "/update/{room_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> loadRoomDetails(@PathVariable(value = "room_id") String roomId) {
         // Initialize ResponseEntityBody
         HttpStatus status;
@@ -106,7 +109,8 @@ public class RoomController {
         return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping(value = "members/{room_id}")
+    @GetMapping(value = "/members/{room_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> loadRoomMembers(@PathVariable(value = "room_id") String roomId) {
         // Initialize ResponseEntityBody
         HttpStatus status;
@@ -135,7 +139,8 @@ public class RoomController {
         return new ResponseEntity<>(response, status);
     }
 
-    @GetMapping(value = "history/{room_id}")
+    @GetMapping(value = "/history/{room_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> loadRoom(@PathVariable(value = "room_id") String roomId,
                                                        @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
                                                        @RequestParam(value = "items_per_page", defaultValue = "50") int itemsPerPage) {
@@ -170,7 +175,8 @@ public class RoomController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PostMapping(value = "{user_id}")
+    @PostMapping(value = "/{user_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> createRoom(@PathVariable(value = "user_id") String userId,
                                                          @RequestBody Room room) {
         // Initialize ResponseEntityBody
@@ -210,7 +216,8 @@ public class RoomController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PutMapping(value = "join/{room_id}")
+    @PutMapping(value = "/join/{room_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> joinRoom(@PathVariable(value = "room_id") String roomId,
                                                        @RequestParam(value = "user_id") String userId,
                                                        @RequestBody(required = false) Room room) {
@@ -242,7 +249,8 @@ public class RoomController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PutMapping(value = "leave/{room_id}")
+    @PutMapping(value = "/leave/{room_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> leaveRoom(@PathVariable(value = "room_id") String roomId,
                                                         @RequestParam(value = "user_id") String userId) {
         // Initialize ResponseEntityBody
@@ -273,7 +281,8 @@ public class RoomController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PutMapping(value = "update/{room_id}")
+    @PutMapping(value = "/update/{room_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> manageRoom(@PathVariable(value = "room_id") String roomId,
                                                          @RequestBody Room room) {
         // Initialize ResponseEntityBody
@@ -311,7 +320,8 @@ public class RoomController {
         return new ResponseEntity<>(response, status);
     }
 
-    @DeleteMapping(value = "{room_id}")
+    @DeleteMapping(value = "/{room_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> deleteRooms(@PathVariable(value = "room_id") String... roomIds) {
         // Initialize ResponseEntityBody
         HttpStatus status;

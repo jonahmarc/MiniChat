@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(value = "kachat/file")
+@RequestMapping(value = "/kachat/file")
 @RequiredArgsConstructor
 public class FileController {
 
     private final FileService fileService;
 
-    @GetMapping(value = "download/{file_id}")
+    @GetMapping(value = "/download/{file_id}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<?> downloadFile(@PathVariable(value = "file_id") String fileId) {
         // Initialize ResponseEntity components
         HttpStatus status;

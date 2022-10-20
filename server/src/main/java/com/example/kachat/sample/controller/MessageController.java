@@ -14,11 +14,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
+@Controller
 @RestController
 @RequiredArgsConstructor
 public class MessageController {
@@ -26,8 +29,9 @@ public class MessageController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final MessageService messageService;
 
-    @MessageMapping(value = "{roomName}")
-    @SendTo(value = "chatroom/{roomName}")
+    @MessageMapping(value = "/kachat/{roomName}")
+    @SendTo(value = "/chatroom/{roomName}")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> receiveMessage(@DestinationVariable String roomName, @Payload Message message) {
         HttpStatus status;
 
@@ -59,7 +63,8 @@ public class MessageController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PostMapping(value = "kachat/messages")
+    @PostMapping(value = "/kachat/messages")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> sendFileAndMessage(@RequestPart(value = "message") Message message,
                                                                  @RequestParam(value = "files", required = false) MultipartFile... files) {
         HttpStatus status;
