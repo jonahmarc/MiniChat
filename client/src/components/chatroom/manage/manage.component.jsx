@@ -1,75 +1,152 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 
-import { Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form, Toast } from "react-bootstrap";
 
 import { connect } from "react-redux";
 
-const ManageChatRoom = (props) => {
-    
-  const [roomData, setRoomData] = useState({
-    roomName: "",
-    private: false,
-    password: "",
-  });
-
+function ManageChatRoom ({type, room_id, name, password, currentUser}) {
+  
   const roomName = useRef();
-  const privacy = useRef();
-  const password = useRef();
+  const roomPrivacy = useRef();
+  const roomPassword = useRef();
     
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [checked, setChecked] = useState(false);
-  const [validated, setValidated] = useState(false);
+  const [checked, setChecked] = useState();
 
+  
+  const [showDel, setShowDel] = useState(false);
 
-  const saveNewRoom =  () => {
-    const newRoomData = {
-        name: roomData.roomName,
-        private: roomData.private,
-        password: roomData.password,
-      };
-      //!fetch("http://localhost:8080/kachat/rooms/634d20e14173ec4c9fd9e402" FOR THE FINAL SERVER
-      fetch("http://localhost:8081/kachat/rooms/6344bdc8238f801b0124710d",{
-      method:"POST",
-      headers:{"Content-type":"application/json"},
-      body:JSON.stringify(newRoomData)
-    }).then(()=>{
-      console.log("new room created")   
-      console.log(newRoomData)
-    })
+  const handleCloseDel = () => setShowDel(false);
+  const handleShowDel = () => {
+    handleClose()
+    setShowDel(true)
   }
 
-    const handleSubmit = (event) => {
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-        }
+  
+  const [showToast, setShowToast] = useState(false);
+  const [error, setError] = useState("");
+  const [toastMsg, setToastMsg] = useState("");
 
-        setValidated(true);
-    };
+  useEffect (() => {
 
-    const deleteRoom = (e) => {
+  }, [showToast, error, toastMsg]);
 
+  let toastMessage;
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (type == 'CREATE') {
+      let URL = 'http://localhost:8080/kachat/rooms/'+currentUser.user_id;
+      console.log(URL)
+
+      if (roomPassword.current != undefined){
+        axios.post(URL, {
+            "name": roomName.current.value,
+            "private": roomPrivacy.current.checked,
+            "password": roomPassword.current.value
+          })
+          .then( result => {
+            toastMessage = "You have successfully created a new room!";
+            setToastMsg(toastMessage)
+            setShowToast(true)
+            handleClose()
+            window.setTimeout(function(){window.location.reload()},4000)
+            // window.location.reload(false);
+          }).catch( error => {
+            setError(error.response.data.response_details.message)
+          })
+      }
+      else {
+        axios.post(URL, {
+            "name": roomName.current.value,
+            "private": roomPrivacy.current.checked
+          })
+          .then( result => {
+            toastMessage = "You have successfully created a new room!";
+            setToastMsg(toastMessage)
+            setShowToast(true)
+            handleClose()
+            window.setTimeout(function(){window.location.reload()},4000)
+            // window.location.reload(false);
+          }).catch( error => {
+            setError(error.response.data.response_details.message)
+          })
+      }
+    }
+    else if (type == 'UPDATE'){
+      let URL = 'http://localhost:8080/kachat/rooms/update/'+room_id;
+      console.log(URL)
+
+      if (roomPassword.current != undefined){
+        axios.put(URL, {
+            "name": roomName.current.value,
+            "private": roomPrivacy.current.checked,
+            "password": roomPassword.current.value
+          })
+          .then( result => {
+            toastMessage = "You have successfully updated the room!";
+            setToastMsg(toastMessage)
+            setShowToast(true)
+            handleClose()
+            window.setTimeout(function(){window.location.reload()},4000)
+            // window.location.reload(false)
+          }).catch( error => {
+            setError(error.response.data.response_details.message)
+          })
+      }
+      else {
+        axios.put(URL, {
+            "name": roomName.current.value,
+            "private": roomPrivacy.current.checked
+          })
+          .then( result => {
+            toastMessage = "You have successfully updated the room!";
+            setToastMsg(toastMessage)
+            setShowToast(true)
+            handleClose()
+            window.setTimeout(function(){window.location.reload()},4000)
+            // window.location.reload(false)
+          }).catch( error => {
+            setError(error.response.data.response_details.message)
+          })
+      }
+    }
+    
+};
+
+    const deleteRoom = () => {
+      axios.delete('http://localhost:8080/kachat/rooms/'+room_id)
+      .then( result => {
+        toastMessage = "You have successfully deleted the room!";
+        setToastMsg(toastMessage)
+        setShowToast(true)
+        handleClose()
+        window.location.reload(false);
+      }).catch( error => {
+          setError(error.response.data.response_details.message)
+      })
     }
 
     let btn;
     let title;
     let del;
 
-    if(props.type == 'CREATE') {
+    if(type == 'CREATE') {
         btn = <Button onClick={handleShow}>
                     <i className="bi bi-plus-lg"></i>
                 </Button>;
         title = "Create New";
     }
-    else if (props.type == 'MANAGE') {
+    else if (type == 'UPDATE') {
         btn = <Button onClick={handleShow}>
                     <i className="bi bi-gear"></i>
                 </Button>;
         title = "Update";
-        del = <Button  variant="outline-danger" onClick={deleteRoom}>
+        del = <Button className="me-auto" variant="outline-danger" onClick={handleShowDel}>
                     DELETE  
                 </Button>;
     }
@@ -77,118 +154,82 @@ const ManageChatRoom = (props) => {
   return (
     <>
       {btn}
-
       <Modal centered="true" show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>{title} Chat Room</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form  onSubmit={handleSubmit} >
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
-              <Form.Check
-                ref={privacy}
-                checked={checked}
-                type="checkbox"
-                label="Set Private"
-                onChange={(e) => setChecked(e.target.checked)}
-              />
+                <Form.Check 
+                  ref={roomPrivacy}
+                  checked={checked} 
+                  type="checkbox" 
+                  label="Set Private" 
+                  onChange={(e) => setChecked(e.target.checked)} />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Control
-                ref={roomName}
-                type="text"
-                placeholder="Enter Room Name"
-                required
-                value={roomData.roomName}
-                onChange={(e) =>
-                  setRoomData({ ...roomData, roomName: e.target.value })
-                }
-              />
+                <Form.Control 
+                  ref={roomName}
+                  type="text" 
+                  placeholder="Enter Room Name" 
+                  defaultValue={name}
+                  required/>
             </Form.Group>
+            {  error && 
+                  <h6 style={{color: 'red'}}>{error}</h6>
+            }
             {checked && (
-              <Form.Group className="mb-3">
-                <Form.Control
-                    ref={password}
-                    type="text"
-                    placeholder="Password"
-                    required
-                    value={roomData.password}
-                    onChange={(e) =>
-                        setRoomData({
-                        ...roomData,
-                        password: e.target.value,
-                        private: true,
-                        })
-                    }
-                />
-              </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Control 
+                    ref={roomPassword}
+                    type="text" 
+                    placeholder="Password" 
+                    defaultValue={password}
+                    required/>
+                </Form.Group>
             )}
             <Form.Group className="d-grid gap-2 d-md-flex justify-content-md-end">
+                
                 {del}
-              <Button variant="secondary" onClick={handleClose}>
-                CANCEL
-              </Button>
-              <Button className="ml-5" type="submit" variant="primary">
-                {props.type}
-              </Button>
+                <Button  variant="secondary" onClick={handleClose}>
+                    CANCEL  
+                </Button>
+                <Button className="ml-5" type="submit" variant="primary">
+                    {type}
+                </Button>
             </Form.Group>
           </Form>
         </Modal.Body>
       </Modal>
+      <Modal centered='true' show={showDel} onHide={handleCloseDel}>
+        <Modal.Header closeButton>
+            Are you sure you want to DELETE the room?
+        </Modal.Header>
+        {  error && 
+            <Modal.Body><h6 style={{color: 'red'}}>{error}</h6></Modal.Body>
+        }
+        <Modal.Footer> 
+            <Button  variant="secondary" onClick={handleCloseDel}>CANCEL</Button>
+            <Button className="ml-5" variant="primary" onClick={deleteRoom}>YES</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Toast className='position-fixed bottom-0 start-0 mb-3 ms-3' 
+        bg='success' onClose={() => setShowToast(false)} show={showToast} 
+        delay={6000} 
+        autohide>
+                <Toast.Header>
+                    <strong className="me-auto">Alert</strong>
+                </Toast.Header>
+                <Toast.Body style={{color: 'white'}}>{toastMsg}</Toast.Body>
+      </Toast>
     </>
   );
 };
 
-
-const mapStateToProps = ({currentRoom}) => ({
-    currentRoom
-  });
+const mapStateToProps = ({user}) => ({
+    currentUser: user.currentUser
+});
 
 export default connect(mapStateToProps)(ManageChatRoom);
-
-
-
-//             <Modal centered='true' show={show} onHide={handleClose}>
-//                 <Modal.Header closeButton>
-//                 <Modal.Title>{title} Chat Room</Modal.Title>
-//                 </Modal.Header>
-//                 <Modal.Body>
-//                     <Form  noValidate validated={validated} onSubmit={handleSubmit} >
-//                         <Form.Group className="mb-3" controlId="formBasicCheckbox">
-//                             <Form.Check checked={checked} type="checkbox" label="Set Private" onChange={(e) => setChecked(e.target.checked)} />
-//                         </Form.Group>
-//                         <Form.Group className="mb-3">
-//                             <Form.Control type="text" placeholder="Enter Room Name" required/>
-//                         </Form.Group>
-//                         {checked && (
-//                             <Form.Group className="mb-3">
-//                                 <Form.Control type="text" placeholder="Password" required/>
-//                             </Form.Group>
-//                         )}
-//                         <Form.Group className="d-grid gap-2 d-md-flex justify-content-md-end">
-//                             {del}
-//                             <Button  variant="secondary" onClick={handleClose}>
-//                                 CANCEL  
-//                             </Button>
-//                             <Button className="ml-5" type="submit" variant="primary">
-//                                 {props.type}
-//                             </Button>
-//                         </Form.Group>
-//                     </Form>
-//                 </Modal.Body>
-//             </Modal>
-//   if (props.type == "CREATE") {
-//     btn = (
-//       <Button onClick={handleShow}>
-//         <i class="bi bi-plus-lg"></i>
-//       </Button>
-//     );
-//     title = "Create New";
-//   } else if (props.type == "MANAGE") {
-//     btn = (
-//       <Button onClick={handleShow}>
-//         <i class="bi bi-gear"></i>
-//       </Button>
-//     );
-//     title = "Update";
-//   }

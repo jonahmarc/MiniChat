@@ -1,9 +1,11 @@
 import './login.component.scss';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 
 import { connect } from 'react-redux';
+import axios from 'axios';
+
 import { setCurrentUser } from '../../redux/user/user.action';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,20 +17,27 @@ const Login = ({ setCurrentUser} ) => {
     const username = useRef();
     const password = useRef();
 
-    let user;
+    let error_message;
+
+	const [error, setError] = useState("");
 
     function handleSubmit(e) {
         e.preventDefault();
-        user = {
-            id: 1,
-            username: username.current.value,
-            password: password.current.value
-        }
-        
-        setCurrentUser(user);
-        console.log(user);
 
-        navigate('/');
+        axios.post('http://localhost:8080/kachat/users/login', {
+                "username": username.current.value,
+                "password": password.current.value
+            })
+            .then( (result) => {
+                setCurrentUser(result.data.data)
+                navigate("/")
+                console.log(result.data.data)
+            })
+            .catch( (error) => {
+                setError(error.response.data.response_details.message);
+                console.log(error.response.data.response_details.message)
+            });
+
 
     }
 
@@ -37,12 +46,15 @@ const Login = ({ setCurrentUser} ) => {
             <h1>WELCOME TO KACHAT!</h1>
             <Form className='login_form' onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
-                    <Form.Control ref={username} type="text" placeholder="Enter username" />
+                    <Form.Control ref={username} type="text" placeholder="Enter username" required/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Control ref={password} type="password" placeholder="Password" />
+                    <Form.Control ref={password} type="password" placeholder="Password" required/>
                 </Form.Group>
+                {error && 
+                    <h6 style={{color: 'red'}}>{error}</h6>
+                }
                 <Button variant="primary" type="submit">
                     LOGIN
                 </Button>

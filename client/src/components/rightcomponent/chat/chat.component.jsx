@@ -1,25 +1,19 @@
 import React, { useState, Suspense } from "react";
 import { Stack, Form, Button } from "react-bootstrap";
-import Picker from "emoji-picker-react";
 import EmojiPicker from "emoji-picker-react";
 
 import "./chat.component.scss";
 
+import { connect } from "react-redux";
+
 import Details from "../../chatroom/details/details.component";
 import Messages from "../../chatroom/messages/message-history.component";
 import UploadFile from "../../chatroom/uploadfile/button-uploadfile.componenet";
-import { useContext } from "react";
-// import { AppContext } from "../../../context/appContext";
 
-const Chat = () => {
-  // const {stompClient} = useContext(AppContext)
-  const [userData, setUserData] = useState({
-    username: "Prince",
-    receiverName: "Mervin",
-    connected: false,
-    message: "",
-  });
+function Chat({ currentRoom, currentUser }) {
 
+
+  console.log(currentRoom)
   const [pickerOpen, togglePicker] = React.useReducer((state) => !state, false);
 
   const [input, setInput] = useState("");
@@ -38,7 +32,6 @@ const Chat = () => {
     console.log(input);
   };
 
-  //*
   const onSubmit = () => {
     //! code for sending a msg, get the current roomName via redux 
     // if(stompClient){
@@ -50,15 +43,12 @@ const Chat = () => {
     //     }
     //     stompClient.send("/kachat/messages"+ roomName, {}, JSON.stringify(chatMessage))
     }
-  
-
-  //*
 
   return (
     <Stack className="right_container m-0">
       <div className="chatroom_details d-flex align-items-center justify-content-between">
         <h4>
-          <strong>Hangouts</strong>
+          <strong>{currentRoom.name}</strong>
         </h4>
         <Details />
       </div>
@@ -87,13 +77,15 @@ const Chat = () => {
           <Button variant="primary" type="submit" onClick={onSubmit} >
             <i className="bi bi-send-fill"></i>
           </Button>
-          {/* <Button variant="light" type='file'><i class="bi bi-file-earmark"></i></Button> */}
-          {/* <Form.Group controlId="formBasicEmail" className="me-auto"> */}
-          {/* </Form.Group> */}
         </Form>
       </div>
     </Stack>
   );
 };
 
-export default Chat;
+const mapStateToProps = ({user, room}) => ({
+  currentUser: user.currentUser,
+  currentRoom: room.currentRoom
+});
+
+export default connect(mapStateToProps)(Chat);

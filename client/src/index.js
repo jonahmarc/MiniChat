@@ -12,7 +12,6 @@ import { WebSocketContext, stompClient } from "./context/appContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-//! PBR: removed <React.StrictMode></React.StrictMode>
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={Persistor}>

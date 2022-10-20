@@ -11,6 +11,7 @@ import {AppContext, stompClient} from './context/appContext'
 class App extends React.Component {
     
   componentDidMount() {
+    console.log('test')
     console.log(this.props.currentUser)
   }
   render() {
@@ -41,42 +42,3 @@ const mapStateToProps = ({user}) => ({
 });
 
 export default connect(mapStateToProps)(App);
-
-
-// function App( {currentUser} ) {
-//   console.log(currentUser);
-//   return (
-//     <Routes>
-      
-//       <Route exact path='/' element={<Navigate replace to='/login' />} />
-//       <Route
-//         exact
-//         path='/login'  
-//         element={
-//           currentUser ? (
-//             <Main />
-//           ) : (
-//             <Login />
-//           )
-//         }
-//           />
-//       {/* <Route exact path='/'
-//           element={ currentUser ? (
-//             <Navigate replace to='/main' /> ) : (
-//               <Navigate replace to='/login' />
-//             )
-//           } 
-
-//       />
-//       { !currentUser && (
-//         <Route exact path="/login" element={ <Login /> } />
-//       )}
-
-//       { currentUser && (
-//         <Route exact path='/main' element={ <Main /> } />
-//       )} */}
-      
-//     </Routes>
-    
-//   );
-// }

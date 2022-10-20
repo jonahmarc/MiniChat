@@ -1,18 +1,14 @@
-import { useState, useEffect } from "react";
 import { Tab, Tabs } from 'react-bootstrap';
-import RoomsList from '../../chatroom/list/list.component';
+
+import RoomsListJoined from '../../chatroom/list/list-joined.component';
+import RoomsListAll from '../../chatroom/list/list-all.component';
+import RoomsListCreated from '../../chatroom/list/list-created.component';
+
 import Displayname from '../../profile/displayname/displayname.component';
 
 import './menu.component.scss';
 
 const Menu = () => {
-  //  useEffect(() => {
-  //   fetch("http://localhost:8081/kachat/rooms/6344bdc8238f801b0124710d")
-  //   .then((res) => res.json())
-  //   .then((result) => {
-  //     setRoomData(result.data.rooms_list);
-  //   });
-  // }, []);
 
   return (
     <Tabs
@@ -22,20 +18,18 @@ const Menu = () => {
       justify
     >
       <Tab eventKey="joined" title="Joined" className='joined'>
-        <RoomsList />
+        <RoomsListJoined type="joined/" />
       </Tab>
-      <Tab eventKey="listrooms" title="Rooms">
-     {/*  { roomData.map(room => {
-       return  <RoomsList roomName={room.name} creator={room.owner.display_name} />
-       }) } */}
-       <RoomsList/>
+      <Tab eventKey="listrooms" title="Rooms" >
+       <RoomsListAll type=""/>
       </Tab>
       <Tab eventKey="profile" title="Profile">
         <Displayname />
-        <RoomsList type='profile' />
+        <RoomsListCreated type='profile/' />
       </Tab>
     </Tabs>
   );
 }
+
 
 export default Menu;

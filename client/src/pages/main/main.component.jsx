@@ -2,18 +2,30 @@ import './main.component.scss';
 
 import LeftComponent from "../../components/leftcomponent/left.component";
 import Chat from "../../components/rightcomponent/chat/chat.component";
+import WelcomeComponent from '../../components/rightcomponent/welcome/welcome.component';
 
-const Main = () => {
+import { connect } from "react-redux";
+
+function Main({ currentRoom }) {
     
     return (
         <div className="main_container">
             <div className="chat_app">
                 <LeftComponent className="left_container"/>
                 <div className="vr"></div>
-                <Chat className="right_container"/>
+                {
+                    currentRoom ? <Chat className="right_container"/> :
+                                <WelcomeComponent  className="right_container" />
+                }
+                
             </div>
         </div>
     );
 }
 
-export default Main;
+
+const mapStateToProps = ({room}) => ({
+    currentRoom: room.currentRoom
+  });
+
+export default connect(mapStateToProps)(Main);
