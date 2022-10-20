@@ -27,7 +27,7 @@ public class RoomController {
     public ResponseEntity<ResponseEntityBody> listRooms(@PathVariable(value = "user_id") String userId,
                                                         @RequestParam(value = "search_key", required = false) String searchKey,
                                                         @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
-                                                        @RequestParam(value = "items_per_page", defaultValue = "10") int itemsPerPage) {
+                                                        @RequestParam(value = "items_per_page", defaultValue = "50") int itemsPerPage) {
         HttpStatus status;
 
         // Retrieve result from service
@@ -143,7 +143,7 @@ public class RoomController {
     @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> loadRoom(@PathVariable(value = "room_id") String roomId,
                                                        @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
-                                                       @RequestParam(value = "items_per_page", defaultValue = "50") int itemsPerPage) {
+                                                       @RequestParam(value = "items_per_page", defaultValue = "100") int itemsPerPage) {
         // Initialize ResponseEntityBody
         HttpStatus status;
         ResponseDetails responseDetails = new ResponseDetails();
