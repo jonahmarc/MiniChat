@@ -337,18 +337,15 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
                 update.set("name", room.getName());
             }
 
-            if (room.getLocked() != null) {
-                update.set("locked", room.getLocked());
-
-                if (room.getLocked()) {
-                    if (room.getPassword() == null) {
-                        return Optional.empty();
-                    }
-
-                    update.set("password", room.getPassword());
-                } else {
-                    update.unset("password");
+            update.set("locked", room.isLocked());
+            if (room.isLocked()) {
+                if (room.getPassword() == null) {
+                    return Optional.empty();
                 }
+
+                update.set("password", room.getPassword());
+            } else {
+                update.unset("password");
             }
 
             mongoTemplate.updateFirst(query, update, Room.class);

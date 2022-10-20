@@ -23,7 +23,7 @@ public class Room {
 
     private String name;
 
-    private Boolean locked;
+    private boolean locked;
 
     private String password;
 
