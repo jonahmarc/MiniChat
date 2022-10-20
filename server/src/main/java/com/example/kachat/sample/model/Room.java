@@ -23,9 +23,7 @@ public class Room {
 
     private String name;
 
-    @Field(value = "private")
-    @JsonProperty(value = "private")
-    private Boolean privacy;
+    private Boolean locked;
 
     private String password;
 
@@ -44,7 +42,7 @@ public class Room {
         return "{" +
                 " _id: '" + id + '\'' +
                 ", name: '" + name + '\'' +
-                ", private: " + privacy +
+                ", locked: " + locked +
                 ", password: '" + password + '\'' +
                 ", owner: '" + owner + '\'' +
                 ", creation_date: " + creationDate +
