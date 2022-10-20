@@ -62,6 +62,7 @@ public class UserController {
         HttpStatus status;
         ResponseDetails responseDetails = new ResponseDetails();
         ResponseEntityBody response = new ResponseEntityBody();
+
         try {
             // Retrieve result from service
             Optional<Document> dataOptional = userService.login(user);

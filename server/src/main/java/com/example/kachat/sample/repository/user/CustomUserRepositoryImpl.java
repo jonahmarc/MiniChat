@@ -24,7 +24,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                         .andApply(document -> new Document()
                                 .append("room_id", new Document("$toString", "$$room._id"))
                                 .append("name", "$$room.name")
-                                .append("private", "$$room.private")
+                                .append("locked", "$$room.locked")
                                 .append("password", "$$room.password")
                         )
                 ).as("created_rooms")
