@@ -128,7 +128,11 @@ public class RoomService {
     }
 
     public boolean joinRoom(String roomId, String userId, Room room) throws MongoException {
-        boolean joined = false;
+        // Search room and verify if it exists
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new MongoException("Cannot join room. Room does not exist.");
+        }
 
         // Search room and verify if it contains the user as a member of the room
         List<Room> joinedRoom = roomRepository.findByIdContainingMembers(roomId, new ObjectId(userId));
@@ -137,9 +141,11 @@ public class RoomService {
             throw new MongoException("User is already a member of room " + joinedRoom.get(0).getName() + ".");
         }
 
+        boolean joined = false;
+
         // If user is not a member of the room, add the user to the room
         // If room is private, add user to the room if password is valid
-        Room selectedRoom = joinedRoom.get(0);
+        Room selectedRoom = roomRepository.findById(roomId).get();
         if (selectedRoom.getLocked()) {
             // Check if the request body is not null and contains password
             if (room != null && room.getPassword() != null) {
@@ -158,6 +164,12 @@ public class RoomService {
     }
 
     public boolean leaveRoom(String roomId, String userId) throws MongoException {
+        // Search room and verify if it exists
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new MongoException("Cannot join room. Room does not exist.");
+        }
+
         boolean left = false;
 
         // Search room and verify if it contains the user as a member of the room
