@@ -44,7 +44,7 @@ public class RoomService {
             // Map name, locked, and password from retrieved room to document
             Document result = new Document();
             result.append("name", room.getName());
-            result.append("locked", room.getLocked());
+            result.append("locked", room.isLocked());
             result.append("password", room.getPassword());
 
             return Optional.of(result);
@@ -100,8 +100,8 @@ public class RoomService {
             }
 
             // Set room details
-            System.out.println(room.getName());
-            if (!room.getLocked()) {
+            System.out.println(room.getName() + " " + room.isLocked());
+            if (!room.isLocked()) {
                 room.setPassword(null);
             }
             room.setOwner(userId);
@@ -146,7 +146,7 @@ public class RoomService {
         // If user is not a member of the room, add the user to the room
         // If room is private, add user to the room if password is valid
         Room selectedRoom = roomRepository.findById(roomId).get();
-        if (selectedRoom.getLocked()) {
+        if (selectedRoom.isLocked()) {
             // Check if the request body is not null and contains password
             if (room != null && room.getPassword() != null) {
                 if (selectedRoom.getPassword().equals(room.getPassword())) {
