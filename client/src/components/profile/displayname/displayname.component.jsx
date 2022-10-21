@@ -34,7 +34,7 @@ function Displayname({currentUser, setCurrentUser}) {
                 )
                 window.location.reload(false)
             }).catch( (error) => {
-                setError(error.response.data.response_details.message)
+                setError(error.message)
             })
         }
     }

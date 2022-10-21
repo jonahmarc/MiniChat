@@ -26,18 +26,17 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
       .then( result => {
         setRoomData(result.data.data.rooms_list)
       }).catch( error => {
-          setError(error.response.data.response_details.message)
+          setError(error.message)
           setShowToast(true)
       })
       setIsLoading(false);
     }
     
-  }, [isLoading, roomData, error, showToast]);
+  }, [isLoading, roomData, error, showToast, show]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.put('http://localhost:8080/kachat/rooms/join/'+currentRoom.room_id, {
-        "user_id": currentUser.user_id,
+    axios.put('http://localhost:8080/kachat/rooms/join/'+currentRoom.room_id+'?user_id='+currentUser.user_id, {
         "password": roomPassword.current.value
     })
       .then( result => {
@@ -51,14 +50,13 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
   }
 
   const selectRoom = (room) => {
-    console.log("selected list all")
-    console.log(room)
 
     if (room.joined) {
         setCurrentRoom({...room, ["joined"]:true})
     }
     else {
-        if (room.private) {
+        if (room.locked) {
+            console.log("privateeeeeeeee")
             console.log(room);
             setCurrentRoom({...room, ["joined"]:true})
             handleShow()
@@ -70,7 +68,7 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
                 window.location.reload(false);
                 console.log(result)
               }).catch( error => {
-                setError(error.response.data.response_details.message)
+                setError(error.message)
                 setShowToast(true)
               })
         }
@@ -102,7 +100,7 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
                     {room.owner.display_name}
                     </figcaption>
                 </figure>
-                {room.private ? <i className="ms-auto bi bi-lock-fill"></i> : <i className="ms-auto bi bi-unlock"></i>}
+                {room.locked ? <i className="ms-auto bi bi-lock-fill"></i> : <i className="ms-auto bi bi-unlock"></i>}
               </ListGroup.Item>
             ))
           }

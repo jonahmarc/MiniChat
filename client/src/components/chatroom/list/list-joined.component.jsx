@@ -50,7 +50,7 @@ function RoomsListJoined ({ setCurrentRoom, currentUser}){
                     {room.owner.display_name}
                     </figcaption>
                 </figure>
-                {room.private ? <i className="ms-auto bi bi-lock-fill"></i> : <i class="ms-auto bi bi-unlock"></i>}
+                {room.locked ? <i className="ms-auto bi bi-lock-fill"></i> : <i class="ms-auto bi bi-unlock"></i>}
               </ListGroup.Item>
             ))
           }

@@ -26,11 +26,12 @@ function RoomsListCreated ({ setCurrentRoom, currentUser, currentMenu}){
       })
       setIsLoading(false);
     }
+    console.log(roomData)
     
   }, [isLoading, roomData]);
 
   const selectRoom = (room) => {
-    // setCurrentRoom({...room, ["joined"]:true})
+    setCurrentRoom(room)
   }
 
   return (
@@ -60,7 +61,7 @@ function RoomsListCreated ({ setCurrentRoom, currentUser, currentMenu}){
                 action
                 variant="light"
                 className="d-grid gap-2 d-flex align-items-center justify-content-start"
-                // onClick={ (e) => selectRoom(room)}
+                onClick={ (e) => selectRoom(room)}
                 >
                 <input
                     className="form-check-input m-0"
@@ -73,7 +74,7 @@ function RoomsListCreated ({ setCurrentRoom, currentUser, currentMenu}){
                     <h6>{room.name}</h6>
                     </blockquote>
                 </figure>
-                {room.private ? <i className="ms-auto bi bi-lock-fill"></i> : <i className="ms-auto bi bi-unlock"></i>}
+                {room.locked ? <i className="ms-auto bi bi-lock-fill"></i> : <i className="ms-auto bi bi-unlock"></i>}
                 <ManageChatRoom type="UPDATE" {...room } />
               </ListGroup.Item>
             ))

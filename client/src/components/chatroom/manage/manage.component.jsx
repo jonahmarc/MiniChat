@@ -5,16 +5,17 @@ import { Button, Modal, Form, Toast } from "react-bootstrap";
 
 import { connect } from "react-redux";
 
-function ManageChatRoom ({type, room_id, name, password, currentUser}) {
+function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
   
   const roomName = useRef();
   const roomPrivacy = useRef();
   const roomPassword = useRef();
+  
     
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [checked, setChecked] = useState();
+  const [checked, setChecked] = useState(locked);
 
   
   const [showDel, setShowDel] = useState(false);
@@ -42,11 +43,10 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
     if (type == 'CREATE') {
       let URL = 'http://localhost:8080/kachat/rooms/'+currentUser.user_id;
       console.log(URL)
-
-      if (roomPassword.current != undefined){
+      if (roomPrivacy.current.checked){
         axios.post(URL, {
             "name": roomName.current.value,
-            "private": roomPrivacy.current.checked,
+            "locked": roomPrivacy.current.checked,
             "password": roomPassword.current.value
           })
           .then( result => {
@@ -57,7 +57,9 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
             window.setTimeout(function(){window.location.reload()},4000)
             // window.location.reload(false);
           }).catch( error => {
-            setError(error.response.data.response_details.message)
+            setError(error.message)
+            console.log("private error")
+            console.log(error)
           })
       }
       else {
@@ -73,7 +75,8 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
             window.setTimeout(function(){window.location.reload()},4000)
             // window.location.reload(false);
           }).catch( error => {
-            setError(error.response.data.response_details.message)
+            setError(error.message)
+            console.log(error)
           })
       }
     }
@@ -84,7 +87,7 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
       if (roomPassword.current != undefined){
         axios.put(URL, {
             "name": roomName.current.value,
-            "private": roomPrivacy.current.checked,
+            "locked": roomPrivacy.current.checked,
             "password": roomPassword.current.value
           })
           .then( result => {
@@ -95,13 +98,14 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
             window.setTimeout(function(){window.location.reload()},4000)
             // window.location.reload(false)
           }).catch( error => {
-            setError(error.response.data.response_details.message)
+            setError(error.message)
+            console.log(error)
           })
       }
       else {
         axios.put(URL, {
             "name": roomName.current.value,
-            "private": roomPrivacy.current.checked
+            "locked": roomPrivacy.current.checked
           })
           .then( result => {
             toastMessage = "You have successfully updated the room!";
@@ -111,7 +115,8 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
             window.setTimeout(function(){window.location.reload()},4000)
             // window.location.reload(false)
           }).catch( error => {
-            setError(error.response.data.response_details.message)
+            setError(error.message)
+            console.log(error)
           })
       }
     }
@@ -127,7 +132,7 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
         handleClose()
         window.location.reload(false);
       }).catch( error => {
-          setError(error.response.data.response_details.message)
+          setError(error.message)
       })
     }
 
@@ -185,7 +190,7 @@ function ManageChatRoom ({type, room_id, name, password, currentUser}) {
                     ref={roomPassword}
                     type="text" 
                     placeholder="Password" 
-                    defaultValue={password}
+                    defaultValue={locked ? password : ''}
                     required/>
                 </Form.Group>
             )}

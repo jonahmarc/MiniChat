@@ -34,8 +34,8 @@ const Login = ({ setCurrentUser} ) => {
                 console.log(result.data.data)
             })
             .catch( (error) => {
-                setError(error.response.data.response_details.message);
-                console.log(error.response.data.response_details.message)
+                setError(error.message);
+                console.log(error.message)
             });
 
 
