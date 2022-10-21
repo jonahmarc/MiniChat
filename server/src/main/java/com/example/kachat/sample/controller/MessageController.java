@@ -14,6 +14,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,7 @@ public class MessageController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final MessageService messageService;
 
-    @MessageMapping(value = "/{roomName}")
+    @MessageMapping(value = "/kachat/{roomName}")
     @SendTo(value = "/chatroom/{roomName}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> receiveMessage(@DestinationVariable String roomName, @Payload Message message) {

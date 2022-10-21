@@ -41,10 +41,10 @@ public class RoomService {
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
 
-            // Map name, private, and password from retrieved room to document
+            // Map name, locked, and password from retrieved room to document
             Document result = new Document();
             result.append("name", room.getName());
-            result.append("private", room.getPrivacy());
+            result.append("locked", room.isLocked());
             result.append("password", room.getPassword());
 
             return Optional.of(result);
@@ -100,8 +100,8 @@ public class RoomService {
             }
 
             // Set room details
-            System.out.println(room.getName());
-            if (!room.getPrivacy()) {
+            System.out.println(room.getName() + " " + room.isLocked());
+            if (!room.isLocked()) {
                 room.setPassword(null);
             }
             room.setOwner(userId);
@@ -127,8 +127,13 @@ public class RoomService {
         return 0;
     }
 
-    @Transactional
-    public void joinRoom(String roomId, String userId) throws MongoException {
+    public boolean joinRoom(String roomId, String userId, Room room) throws MongoException {
+        // Search room and verify if it exists
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new MongoException("Cannot join room. Room does not exist.");
+        }
+
         // Search room and verify if it contains the user as a member of the room
         List<Room> joinedRoom = roomRepository.findByIdContainingMembers(roomId, new ObjectId(userId));
 
@@ -136,46 +141,77 @@ public class RoomService {
             throw new MongoException("User is already a member of room " + joinedRoom.get(0).getName() + ".");
         }
 
+        boolean joined = false;
+
         // If user is not a member of the room, add the user to the room
-        int roomModifiedCount = roomRepository.findByIdAndAddUserToRoom(roomId, new ObjectId(userId));
-
-        if (roomModifiedCount != 1) {
-            throw new MongoException("Cannot modify room.");
+        // If room is private, add user to the room if password is valid
+        Room selectedRoom = roomRepository.findById(roomId).get();
+        if (selectedRoom.isLocked()) {
+            // Check if the request body is not null and contains password
+            if (room != null && room.getPassword() != null) {
+                if (selectedRoom.getPassword().equals(room.getPassword())) {
+                    // Add user to room's members and room to user's joined rooms
+                    updateRoomAndUserRef("push", roomId, userId);
+                    joined = true;
+                }
+            }
+        } else {
+            updateRoomAndUserRef("push", roomId, userId);
+            joined = true;
         }
 
-        // Add room to User's joined rooms
-        int userModifiedCount = userService.updateJoinedRooms("push", userId, roomId);
-
-        if (userModifiedCount != 1) {
-            throw new MongoException("Cannot modify user.");
-        }
+        return joined;
     }
 
-    @Transactional
-    public void leaveRoom(String roomId, String userId) throws MongoException {
+    public boolean leaveRoom(String roomId, String userId) throws MongoException {
+        // Search room and verify if it exists
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
+        if (roomOptional.isEmpty()) {
+            throw new MongoException("Cannot join room. Room does not exist.");
+        }
+
+        boolean left = false;
+
         // Search room and verify if it contains the user as a member of the room
         List<Room> joinedRoom = roomRepository.findByIdContainingMembers(roomId, new ObjectId(userId));
 
-        if (joinedRoom.isEmpty()) {
-            throw new MongoException("User is not a member of the room.");
+        if (!joinedRoom.isEmpty()) {
+            // If user is a member of the room, remove the user from the room's members and room from the user's joined rooms
+            updateRoomAndUserRef("pull", roomId, userId);
+            left = true;
         }
 
-        // If user is a member of the room, remove the user from the room
-        int roomModifiedCount = roomRepository.findByIdAndRemoveUserFromRoom(roomId, new ObjectId(userId));
+        return left;
+    }
+
+    @Transactional
+    private void updateRoomAndUserRef(String action, String roomId, String userId) throws MongoException {
+        int roomModifiedCount = 0;
+        int userModifiedCount = 0;
+
+        switch (action) {
+            case "push":
+                roomModifiedCount = roomRepository.findByIdAndAddUserToRoom(roomId, new ObjectId(userId));
+                userModifiedCount = userService.updateJoinedRooms(action, userId, roomId);
+                break;
+            case "pull":
+                roomModifiedCount = roomRepository.findByIdAndRemoveUserFromRoom(roomId, new ObjectId(userId));
+                userModifiedCount = userService.updateJoinedRooms("pull", userId, roomId);
+                break;
+            default: // Do nothing
+        }
 
         if (roomModifiedCount != 1) {
             throw new MongoException("Cannot modify room.");
         }
-
-        // Add room to User's joined rooms
-        int userModifiedCount = userService.updateJoinedRooms("pull", userId, roomId);
-
+        
         if (userModifiedCount != 1) {
             throw new MongoException("Cannot modify user.");
         }
+
     }
 
-    public Optional<Document> updateRoom(String roomId, Room room) throws JsonProcessingException {
+    public Optional<Document> manageRoom(String roomId, Room room) throws JsonProcessingException {
         Optional<Room> roomOptional = roomRepository.updateRoom(roomId, room);
 
         if (roomOptional.isPresent()) {

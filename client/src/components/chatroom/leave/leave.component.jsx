@@ -29,7 +29,7 @@ function LeaveChatRoom ({user_id, room_id, setCurrentRoom}) {
             setCurrentRoom(null)
             window.location.reload(false);
         }).catch( error => {
-            setError(error.response.data.response_details.message)
+            setError(error.message)
         })
     };
 

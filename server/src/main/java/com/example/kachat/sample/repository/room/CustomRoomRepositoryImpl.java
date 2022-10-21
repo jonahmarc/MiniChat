@@ -40,7 +40,7 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
         ProjectionOperation projectFields = Aggregation.project()
                 .andExclude("_id")
                 .and(document -> new Document("$toString", "$_id")).as("room_id")
-                .andInclude("name", "private", "password")
+                .andInclude("name", "locked", "password")
                 .and(VariableOperators.mapItemsOf("owner")
                         .as("owner")
                         .andApply(document -> new Document("username", "$$owner.username")
@@ -117,7 +117,7 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
         ProjectionOperation projectFields = Aggregation.project()
                 .andExclude("_id")
                 .and(document -> new Document("$toString", "$_id")).as("room_id")
-                .andInclude("name", "private", "password")
+                .andInclude("name", "locked", "password")
                 .and(VariableOperators.mapItemsOf("owner")
                         .as("owner")
                         .andApply(document -> new Document("username", "$$owner.username")
@@ -330,25 +330,22 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
 
         // If room exists, update room
         if (roomOptional.isPresent()) {
-            // Only update room name, privacy and password
+            // Only update room name, locked and password
             Update update = new Update();
 
             if (room.getName() != null) {
                 update.set("name", room.getName());
             }
 
-            if (room.getPrivacy() != null) {
-                update.set("private", room.getPrivacy());
-
-                if (room.getPrivacy()) {
-                    if (room.getPassword() == null) {
-                        return Optional.empty();
-                    }
-
-                    update.set("password", room.getPassword());
-                } else {
-                    update.unset("password");
+            update.set("locked", room.isLocked());
+            if (room.isLocked()) {
+                if (room.getPassword() == null) {
+                    return Optional.empty();
                 }
+
+                update.set("password", room.getPassword());
+            } else {
+                update.unset("password");
             }
 
             mongoTemplate.updateFirst(query, update, Room.class);

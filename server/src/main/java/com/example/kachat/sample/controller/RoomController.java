@@ -27,7 +27,7 @@ public class RoomController {
     public ResponseEntity<ResponseEntityBody> listRooms(@PathVariable(value = "user_id") String userId,
                                                         @RequestParam(value = "search_key", required = false) String searchKey,
                                                         @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
-                                                        @RequestParam(value = "items_per_page", defaultValue = "10") int itemsPerPage) {
+                                                        @RequestParam(value = "items_per_page", defaultValue = "50") int itemsPerPage) {
         HttpStatus status;
 
         // Retrieve result from service
@@ -143,7 +143,7 @@ public class RoomController {
     @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> loadRoom(@PathVariable(value = "room_id") String roomId,
                                                        @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
-                                                       @RequestParam(value = "items_per_page", defaultValue = "50") int itemsPerPage) {
+                                                       @RequestParam(value = "items_per_page", defaultValue = "100") int itemsPerPage) {
         // Initialize ResponseEntityBody
         HttpStatus status;
         ResponseDetails responseDetails = new ResponseDetails();
@@ -219,18 +219,24 @@ public class RoomController {
     @PutMapping(value = "/join/{room_id}")
     @CrossOrigin(origins = "*")
     public ResponseEntity<ResponseEntityBody> joinRoom(@PathVariable(value = "room_id") String roomId,
-                                                       @RequestParam(value = "user_id") String userId) {
+                                                       @RequestParam(value = "user_id") String userId,
+                                                       @RequestBody(required = false) Room room) {
         // Initialize ResponseEntityBody
         HttpStatus status;
         ResponseDetails responseDetails = new ResponseDetails();
         ResponseEntityBody response = new ResponseEntityBody();
 
         try {
-            roomService.joinRoom(roomId, userId);
-
-            // For normal join room scenario
-            status = HttpStatus.OK;
-            responseDetails.setMessage(status.getReasonPhrase() + ": User has successfully joined the room.");
+            boolean joined = roomService.joinRoom(roomId, userId, room);
+            if (joined) {
+                // For normal join room scenario
+                status = HttpStatus.OK;
+                responseDetails.setMessage(status.getReasonPhrase() + ": User has successfully joined the room.");
+            } else {
+                // Indicate status 400 and message with "Invalid password."
+                status = HttpStatus.BAD_REQUEST;
+                responseDetails.setMessage(status.getReasonPhrase() + ": Invalid password.");
+            }
         } catch (MongoException e) {
             System.out.println(e.getMessage());
             status = HttpStatus.CONFLICT;
@@ -253,11 +259,16 @@ public class RoomController {
         ResponseEntityBody response = new ResponseEntityBody();
 
         try {
-            roomService.leaveRoom(roomId, userId);
-
-            // For normal join room scenario
-            status = HttpStatus.OK;
-            responseDetails.setMessage(status.getReasonPhrase() + ": User has successfully leaved the room.");
+            boolean left = roomService.leaveRoom(roomId, userId);
+            if (left) {
+                // For normal join room scenario
+                status = HttpStatus.OK;
+                responseDetails.setMessage(status.getReasonPhrase() + ": User has successfully leaved the room.");
+            } else {
+                // Indicate status 400 and message with "User is not a member of the room."
+                status = HttpStatus.BAD_REQUEST;
+                responseDetails.setMessage(status.getReasonPhrase() + ": User is not a member of the room.");
+            }
         } catch (MongoException e) {
             System.out.println(e.getMessage());
             status = HttpStatus.CONFLICT;
@@ -281,7 +292,7 @@ public class RoomController {
 
         try {
             // Retrieve result from service
-            Optional<Document> dataOptional = roomService.updateRoom(roomId, room);
+            Optional<Document> dataOptional = roomService.manageRoom(roomId, room);
 
             if (dataOptional.isPresent()) {
                 // For normal manage room scenario
