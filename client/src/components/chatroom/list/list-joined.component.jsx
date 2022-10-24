@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { Button, ListGroup } from "react-bootstrap";
 
@@ -6,11 +6,14 @@ import axios from 'axios';
 
 import { connect } from "react-redux";
 import { setCurrentRoom } from "../../../redux/room/room.action";
+import { WebSocketContext} from "../../../context/appContext";
+import { setCurrentMessage } from "../../../redux/messages/message.action";
 
-function RoomsListJoined ({ setCurrentRoom, currentUser}){
 
+function RoomsListJoined ({ setCurrentRoom, currentUser,setCurrentMessage}){
   const [roomData, setRoomData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const {stompClient} = useContext(WebSocketContext)
 
   useEffect(() => {
     if (isLoading) {
@@ -23,11 +26,33 @@ function RoomsListJoined ({ setCurrentRoom, currentUser}){
       })
       setIsLoading(false);
     }
-    
   }, [isLoading, roomData]);
+  
+  const onMessageReceived = (payload) => {
+    // console.log(payload)
+    // const payloadData = JSON.parse(payload.body)
+    // console.log(payloadData)
+    // const payloadData = JSON.parse(payload.body)
+    // setCurrentMessage(payloadData.body.data)
+  //  const payloadData = JSON.parse(payload.body)
+  //   console.log("MESSAGE: ",payloadData.body.data)
+   //setCurrentMessage(payloadData.body.data)
+    
+  }
+
+  // const onSubscribe = (roomId) => {
+  //   stompClient.subscribe("/chatroom/"+roomId,onMessageReceived())
+  // }
 
   const selectRoom = (room) => {
     setCurrentRoom(room)
+    console.log(room.room_id)
+    window.location.reload()
+
+   // onSubscribe(room.room_id)
+    
+
+    
   }
 
   return (
@@ -66,6 +91,7 @@ const mapStateToProps = ({user: {currentUser}}) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
+  
 });
 
 export default connect(mapStateToProps,mapDispatchToProps)(RoomsListJoined);
