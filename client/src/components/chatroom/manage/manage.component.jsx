@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
 import { Button, Modal, Form, Toast } from "react-bootstrap";
+import makeToast from "../../toast/toaster";
 
 import { connect } from "react-redux";
+import { setCurrentRoom } from "../../../redux/room/room.action";
 
-function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
+function ManageChatRoom ({type, room_id, locked, name, password, currentUser, setCurrentRoom}) {
   
   const roomName = useRef();
   const roomPrivacy = useRef();
@@ -26,16 +28,11 @@ function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
     setShowDel(true)
   }
 
-  
-  const [showToast, setShowToast] = useState(false);
   const [error, setError] = useState("");
-  const [toastMsg, setToastMsg] = useState("");
 
   useEffect (() => {
 
-  }, [showToast, error, toastMsg]);
-
-  let toastMessage;
+  }, [show, error]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -50,12 +47,9 @@ function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
             "password": roomPassword.current.value
           })
           .then( result => {
-            toastMessage = "You have successfully created a new room!";
-            setToastMsg(toastMessage)
-            setShowToast(true)
             handleClose()
-            window.setTimeout(function(){window.location.reload()},4000)
-            // window.location.reload(false);
+            makeToast("success", result.data.response_details.message)
+            window.setTimeout(function(){window.location.reload()},2000)
           }).catch( error => {
             setError(error.message)
             console.log("private error")
@@ -68,12 +62,9 @@ function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
             "private": roomPrivacy.current.checked
           })
           .then( result => {
-            toastMessage = "You have successfully created a new room!";
-            setToastMsg(toastMessage)
-            setShowToast(true)
             handleClose()
-            window.setTimeout(function(){window.location.reload()},4000)
-            // window.location.reload(false);
+            makeToast("success", result.data.response_details.message)
+            window.setTimeout(function(){window.location.reload()},2000)
           }).catch( error => {
             setError(error.message)
             console.log(error)
@@ -91,12 +82,9 @@ function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
             "password": roomPassword.current.value
           })
           .then( result => {
-            toastMessage = "You have successfully updated the room!";
-            setToastMsg(toastMessage)
-            setShowToast(true)
             handleClose()
-            window.setTimeout(function(){window.location.reload()},4000)
-            // window.location.reload(false)
+            makeToast("success", result.data.response_details.message)
+            window.setTimeout(function(){window.location.reload()},2000)
           }).catch( error => {
             setError(error.message)
             console.log(error)
@@ -108,12 +96,9 @@ function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
             "locked": roomPrivacy.current.checked
           })
           .then( result => {
-            toastMessage = "You have successfully updated the room!";
-            setToastMsg(toastMessage)
-            setShowToast(true)
             handleClose()
-            window.setTimeout(function(){window.location.reload()},4000)
-            // window.location.reload(false)
+            makeToast("success", result.data.response_details.message)
+            window.setTimeout(function(){window.location.reload()},2000)
           }).catch( error => {
             setError(error.message)
             console.log(error)
@@ -126,11 +111,10 @@ function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
     const deleteRoom = () => {
       axios.delete('http://localhost:8080/kachat/rooms/'+room_id)
       .then( result => {
-        toastMessage = "You have successfully deleted the room!";
-        setToastMsg(toastMessage)
-        setShowToast(true)
-        handleClose()
-        window.location.reload(false);
+        handleCloseDel()
+        setCurrentRoom(null)
+        makeToast("success", result.data.response_details.message)
+        window.setTimeout(function(){window.location.reload()},2000)
       }).catch( error => {
           setError(error.message)
       })
@@ -219,16 +203,6 @@ function ManageChatRoom ({type, room_id, locked, name, password, currentUser}) {
             <Button className="ml-5" variant="primary" onClick={deleteRoom}>YES</Button>
         </Modal.Footer>
       </Modal>
-
-      <Toast className='position-fixed bottom-0 start-0 mb-3 ms-3' 
-        bg='success' onClose={() => setShowToast(false)} show={showToast} 
-        delay={6000} 
-        autohide>
-                <Toast.Header>
-                    <strong className="me-auto">Alert</strong>
-                </Toast.Header>
-                <Toast.Body style={{color: 'white'}}>{toastMsg}</Toast.Body>
-      </Toast>
     </>
   );
 };
@@ -237,4 +211,8 @@ const mapStateToProps = ({user}) => ({
     currentUser: user.currentUser
 });
 
-export default connect(mapStateToProps)(ManageChatRoom);
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
+})
+
+export default connect(mapStateToProps,mapDispatchToProps)(ManageChatRoom);

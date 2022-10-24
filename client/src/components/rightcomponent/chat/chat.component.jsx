@@ -55,7 +55,7 @@ function Chat({ currentRoom, currentUser }) {
   };
 
   return (
-    <Stack className="right_container m-0">
+    <Stack className="right_container m-0 gap-2">
       <div className="chatroom_details d-flex align-items-center justify-content-between">
         <h4>
           <strong>{currentRoom.name}</strong>

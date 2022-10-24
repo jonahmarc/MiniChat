@@ -45,14 +45,14 @@ function Details({currentUser, currentRoom}) {
                                 <ListGroup.Item>{
                                     members.online ? <i className="bi bi-patch-check-fill text-success me-2"></i> : 
                                     <i className="bi bi-patch-check me-2"></i>
-                                    }{members.display_name}</ListGroup.Item>
+                                    }{members.username}</ListGroup.Item>
                             ))
                         }
                     </ListGroup>
                 </Modal.Body>
                 <Modal.Footer>
-                    {/* { currentRoom.owner.username != currentUser.username ? 
-                    <LeaveChatRoom onClick={handleClose} user_id={currentUser.user_id} room_id={currentRoom.room_id} /> : null} */}
+                    { currentRoom.owner.username != currentUser.username ? 
+                    <LeaveChatRoom onClick={handleClose} user_id={currentUser.user_id} room_id={currentRoom.room_id} /> : null}
                 </Modal.Footer>
             </Modal>
         </>

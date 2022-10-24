@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useState, useRef } from 'react';
 
 import { Form, Button, Toast } from 'react-bootstrap';
+import makeToast from '../../toast/toaster';
 
 import { connect } from 'react-redux';
 import { setCurrentUser } from '../../../redux/user/user.action';
@@ -12,13 +13,11 @@ import './displayname.component.scss';
 function Displayname({currentUser, setCurrentUser}) {
 
     const displayName = useRef();
-
-    const [show, setShow] = useState(false);
     const [error, setError] = useState("");
 
     useEffect (() => {
 
-    }, [show, error]);
+    }, [error]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -28,11 +27,10 @@ function Displayname({currentUser, setCurrentUser}) {
                 "display_name": displayName.current.value
             })
             .then( (result) => {
-                setShow(true)
                 setCurrentUser(
                     {...currentUser,["display_name"]: displayName.current.value}
                 )
-                window.location.reload(false)
+                makeToast("success", result.data.response_details.message)
             }).catch( (error) => {
                 setError(error.message)
             })
@@ -55,14 +53,6 @@ function Displayname({currentUser, setCurrentUser}) {
                     UPDATE
                 </Button>
             </Form>
-            <Toast className='position-absolute bottom-0 start-0 mb-3 ms-3' 
-            bg='success' onClose={() => setShow(false)} show={show} 
-            delay={6000} autohide>
-                <Toast.Header>
-                    <strong className="me-auto">Alert</strong>
-                </Toast.Header>
-                <Toast.Body>Display Name updated successfully!</Toast.Body>
-            </Toast>
         </>
     );
 

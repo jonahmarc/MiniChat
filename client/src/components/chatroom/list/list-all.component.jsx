@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 import { Button, ListGroup, Modal, Form, Toast } from "react-bootstrap";
+import makeToast from "../../toast/toaster";
 
 import axios from 'axios';
 
@@ -15,65 +16,65 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
   const handleShow = () => setShow(true);
 
   const [roomData, setRoomData] = useState([]);
+  const [selectedRoom, setselectedRoom] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [showToast, setShowToast] = useState(false);
   const [error, setError] = useState("");
+  
 
 
   useEffect(() => {
     if (isLoading) {
       axios.get('http://localhost:8080/kachat/rooms/'+currentUser.user_id)
       .then( result => {
+        console.log('list-all')
         setRoomData(result.data.data.rooms_list)
       }).catch( error => {
-          setError(error.message)
-          setShowToast(true)
+        makeToast("error", error.message)
+        window.setTimeout(function(){window.location.reload()},2000)
       })
       setIsLoading(false);
     }
     
-  }, [isLoading, roomData, error, showToast, show]);
+  }, [isLoading, roomData, error, show, selectedRoom]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.put('http://localhost:8080/kachat/rooms/join/'+currentRoom.room_id+'?user_id='+currentUser.user_id, {
+    axios.put('http://localhost:8080/kachat/rooms/join/'+selectedRoom.room_id+'?user_id='+currentUser.user_id, {
         "password": roomPassword.current.value
     })
       .then( result => {
+        setCurrentRoom({...selectedRoom, ["joined"]:true})
         handleClose()
-        window.location.reload(false);
+        makeToast("success", result.data.response_details.message)
+        window.setTimeout(function(){window.location.reload()},2000)
       }).catch( error => {
-        console.log(error)
-        setError(error.message)
-        setShowToast(true)
+        setError(error.response.data.response_details.message)
       })
   }
 
   const selectRoom = (room) => {
 
     if (room.joined) {
-        setCurrentRoom({...room, ["joined"]:true})
+        setCurrentRoom(room)
     }
     else {
         if (room.locked) {
-            console.log("privateeeeeeeee")
-            console.log(room);
-            setCurrentRoom({...room, ["joined"]:true})
+            setselectedRoom(room)
             handleShow()
         }
         else {
             axios.put('http://localhost:8080/kachat/rooms/join/'+room.room_id+'?user_id='+currentUser.user_id)
               .then( result => {
                 setCurrentRoom({...room, ["joined"]:true})
-                window.location.reload(false);
                 console.log(result)
+                makeToast("success", result.data.response_details.message)
+                window.setTimeout(function(){window.location.reload()},2000)
               }).catch( error => {
-                setError(error.message)
-                setShowToast(true)
+                makeToast("error", error.message)
+                window.setTimeout(function(){window.location.reload()},2000)
               })
         }
     }
-    console.log(room);
   }
 
   return (
@@ -92,12 +93,12 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
                                 <i className="bi bi-check-circle-fill" variant=""></i>
                 }
                 
-                <figure className="d-flex flex-column align-items-center m-0 p-0">
+                <figure className="d-flex flex-column align-items-start justify-content-start m-0 p-0">
                     <blockquote class="blockquote m-0 p-0">
-                    <h6>{room.name}</h6>
+                      <h6>{room.name}</h6>
                     </blockquote>
                     <figcaption class="blockquote-footer m-0 p-0">
-                    {room.owner.display_name}
+                      {room.owner.username}
                     </figcaption>
                 </figure>
                 {room.locked ? <i className="ms-auto bi bi-lock-fill"></i> : <i className="ms-auto bi bi-unlock"></i>}
@@ -132,15 +133,6 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
             </Modal.Body>
           </Modal>
         </ListGroup>
-        <Toast className='position-fixed bottom-0 start-0 mb-3 ms-3' 
-        bg='success' onClose={() => setShowToast(false)} show={showToast} 
-        delay={6000} 
-        autohide>
-                <Toast.Header>
-                    <strong className="me-auto">Alert</strong>
-                </Toast.Header>
-                <Toast.Body>{error}</Toast.Body>
-        </Toast>
     </>
   );
 };

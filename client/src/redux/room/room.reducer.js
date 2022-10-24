@@ -12,6 +12,11 @@ const roomReducer = (state = INITIAL_STATE, action) => {
         ...state,
         currentRoom: action.payload
       }
+      case RoomActionTypes.LOGOUT_ROOM:
+        return {
+          ...state,
+          currentRoom: null
+        }
     default:
       return state;
   }
