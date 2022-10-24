@@ -1,4 +1,3 @@
-import storage from 'redux-persist/lib/storage';
 import { UserActionTypes } from './user.types';
 
 const INITIAL_STATE = {
@@ -13,8 +12,6 @@ const userReducer = (state = INITIAL_STATE, action) => {
         currentUser: action.payload
       };
     case UserActionTypes.LOGOUT_USER:
-      console.log("logoutUser")
-      storage.removeItem('persist:primary')
       return {
         ...state,
         currentUser: null

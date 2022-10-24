@@ -5,3 +5,7 @@ export const setCurrentRoom = room => ({
   payload: room
 });
 
+export const logoutRoom = () => ({
+  type: RoomActionTypes.LOGOUT_ROOM
+});
+
