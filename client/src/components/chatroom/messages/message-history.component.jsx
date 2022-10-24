@@ -79,11 +79,17 @@ const Messages = ({
               : "received align-self-start ms-2 mb-3 p-2"
           }
         >
-          <p className="m-0 p-0 fs-6 fw-lighter" key={index}>
-            <em>{msg.user.display_name}</em>
+          <p className="mb-0 p-0 fs-6 fw-lighter" key={index}>
+            <em className="m-0 p-0" style={{
+                color: 'gray',
+                fontSize: 12
+            }} >{msg.user.display_name}</em>
           </p>
-          <p className="m-0 p-0 fs-6 fw-lighter">
-            <em>{msg.sent_at}</em>
+          <p className="mb-0 p-0 fs-6 fw-lighter">
+            <em style={{
+                color: 'gray',
+                fontSize: 8
+            }} >{msg.sent_at}</em>
           </p>
           <p className="m-0 p-0">{msg.content}</p>
         </div>
