@@ -105,28 +105,4 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(mapStateToProps, mapDispatchToProps)(Messages);
 
-{
-  /* {chat.map((msg) =>
-        msgBox ? (
-          <div className="sent align-self-end me-2 mb-3 p-2">
-            <p className="m-0 p-0 fs-6 fw-lighter">
-              <em>{msg.username}</em>
-            </p>
-            <p className="m-0 p-0 fs-6 fw-lighter">
-              <em>{msg.sent_at}</em>
-            </p>
-            <p className="m-0 p-0">{msg.content}</p>
-          </div>
-        ) : (
-          <div className="received align-self-start ms-2 mb-3 p-2">
-            <p className="m-0 p-0 fs-6 fw-lighter">
-              <em>{msg.username}</em>
-            </p>
-            <p className="m-0 p-0 fs-6 fw-lighter">
-              <em>{msg.sent_at}</em>
-            </p>
-            <p className="m-0 p-0">{msg.content}</p>
-          </div>
-        )
-      )} */
-}
+
