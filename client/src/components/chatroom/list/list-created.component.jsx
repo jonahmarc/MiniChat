@@ -19,7 +19,7 @@ function RoomsListCreated ({ setCurrentRoom, currentUser, currentMenu}){
       axios.get('http://localhost:8080/kachat/users/rooms/'+currentUser.user_id)
       .then( result => {
         setRoomData(result.data.data.created_rooms)
-        console.log("rooms")
+        console.log("created-rooms")
         console.log(result.data.data.created_rooms)
       }).catch( error => {
         console.log(error)
@@ -43,16 +43,16 @@ function RoomsListCreated ({ setCurrentRoom, currentUser, currentMenu}){
                 className="d-grid gap-2 d-flex align-items-center justify-content-start sticky-top"
                 
             >
-                <input
+                {/* <input
                 className="form-check-input m-0"
                 type="checkbox"
                 id="checkboxNoLabel"
                 value=""
-                />
-                <h6 className="mb-0 me-auto">Select All</h6>
-                <Button variant="danger">
+                /> */}
+                <h6 className="mb-0 me-auto">Created Rooms</h6>
+                {/* <Button variant="danger">
                 <i className="bi bi-trash3-fill"></i>
-                </Button>
+                </Button> */}
             </ListGroup.Item>
           {
             roomData.map( (room, index) => (
@@ -63,12 +63,12 @@ function RoomsListCreated ({ setCurrentRoom, currentUser, currentMenu}){
                 className="d-grid gap-2 d-flex align-items-center justify-content-start"
                 onClick={ (e) => selectRoom(room)}
                 >
-                <input
+                {/* <input
                     className="form-check-input m-0"
                     type="checkbox"
                     id="checkboxNoLabel"
                     value=""
-                />
+                /> */}
                 <figure className="d-flex flex-column align-items-center m-0 p-0 me-auto">
                     <blockquote class="blockquote m-0 p-0">
                     <h6>{room.name}</h6>

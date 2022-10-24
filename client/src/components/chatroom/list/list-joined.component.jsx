@@ -17,7 +17,7 @@ function RoomsListJoined ({ setCurrentRoom, currentUser}){
       axios.get('http://localhost:8080/kachat/rooms/joined/'+currentUser.user_id)
       .then( result => {
         setRoomData(result.data.data.joined_rooms)
-        console.log(result.data.data.joined_rooms)
+        console.log('joined')
       }).catch( error => {
         console.log(error)
       })
@@ -47,7 +47,7 @@ function RoomsListJoined ({ setCurrentRoom, currentUser}){
                     <h6>{room.name}</h6>
                     </blockquote>
                     <figcaption class="blockquote-footer m-0 p-0">
-                    {room.owner.display_name}
+                    {room.owner.username}
                     </figcaption>
                 </figure>
                 {room.locked ? <i className="ms-auto bi bi-lock-fill"></i> : <i class="ms-auto bi bi-unlock"></i>}

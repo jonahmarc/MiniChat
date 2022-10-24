@@ -6,13 +6,13 @@ import { connect } from "react-redux";
 import { setCurrentRoom } from "../../../redux/room/room.action";
 
 import { Button, Modal, Toast } from "react-bootstrap";
+import makeToast from "../../toast/toaster";
 
 import './leave.component.scss';
 
 function LeaveChatRoom ({user_id, room_id, setCurrentRoom}) {
     
     const [show, setShow] = useState(false);
-    let toastMessage;
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -27,7 +27,8 @@ function LeaveChatRoom ({user_id, room_id, setCurrentRoom}) {
         .then( result => {
             handleClose()
             setCurrentRoom(null)
-            window.location.reload(false);
+            makeToast("success", result.data.response_details.message)
+            window.setTimeout(function(){window.location.reload()},2000)
         }).catch( error => {
             setError(error.message)
         })

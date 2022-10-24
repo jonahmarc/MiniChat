@@ -9,6 +9,7 @@ import SearchRoom from "../chatroom/search/search.component";
 import Menu from "./menu/menu.component";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import makeToast from "../toast/toaster";
 
 function LeftComponent ( { logoutUser, currentUser } ) {
 
@@ -17,14 +18,14 @@ function LeftComponent ( { logoutUser, currentUser } ) {
     const handleLogout = () => {
         axios.put('http://localhost:8080/kachat/users/logout/'+currentUser.user_id)
         .then((result) => {
+            logoutUser();
+            navigate('/');
             console.log(result.message)
+            console.log('logout');
         }).catch((error) => {
             console.log(error)
-            alert(error.message)
+            makeToast("error", error.message)
         })
-        logoutUser();
-        navigate('/');
-        console.log('logout');
     }
 
     return (
