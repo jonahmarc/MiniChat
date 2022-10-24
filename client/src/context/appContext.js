@@ -3,7 +3,7 @@ import {over} from 'stompjs'
 import SockJS from "sockjs-client";
 let Sock = new SockJS('http://localhost:8080/ws')
 export let stompClient = over(Sock)
-stompClient.connect({})
+//stompClient.connect({})
 export const WebSocketContext = React.createContext();
 
 // // export default  ({children,currentRoom}) =>{

@@ -20,7 +20,7 @@ function RoomsListJoined ({ setCurrentRoom, currentUser,setCurrentMessage}){
       axios.get('http://localhost:8080/kachat/rooms/joined/'+currentUser.user_id)
       .then( result => {
         setRoomData(result.data.data.joined_rooms)
-        console.log(result.data.data.joined_rooms)
+      console.log("JOINED ROOMS: ",result.data.data.joined_rooms)
       }).catch( error => {
         console.log(error)
       })
@@ -40,19 +40,17 @@ function RoomsListJoined ({ setCurrentRoom, currentUser,setCurrentMessage}){
     
   }
 
-  const onSubscribe = (roomId) => {
-    stompClient.subscribe("/chatroom/"+roomId,onMessageReceived())
-  }
+  // const onSubscribe = (roomId) => {
+  //   stompClient.subscribe("/chatroom/"+roomId,onMessageReceived())
+  // }
 
   const selectRoom = (room) => {
     setCurrentRoom(room)
     console.log(room.room_id)
-    onSubscribe(room.room_id)
-    stompClient.subscribe("/chatroom/"+ room.room_id, function (payload){
-      const payloadData = JSON.parse(payload.body)
-      console.log("MESSAGE: ", payloadData.body.data)
-      setCurrentMessage(payloadData.body.data)
-    } )
+    window.location.reload()
+
+   // onSubscribe(room.room_id)
+    
 
     
   }
@@ -93,7 +91,7 @@ const mapStateToProps = ({user: {currentUser}}) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
-  setCurrentMessage: (message) => dispatch(setCurrentMessage(message))
+  
 });
 
 export default connect(mapStateToProps,mapDispatchToProps)(RoomsListJoined);
