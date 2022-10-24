@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button, CloseButton } from "react-bootstrap";
+import { setCurrentFile } from "../../../redux/folder/file.action";
+import { connect } from "react-redux";
 
-const UploadFile = () => {
+const UploadFile = ({setCurrentFile}) => {
 
   const [uploadedFileName, setUploadedFileName] = useState(null)
   const [inputFile, setInputFile] = useState(null)
@@ -16,6 +18,9 @@ const UploadFile = () => {
   const handleDisplayFileDetails = () => {
     inputFile?.files && setUploadedFileName(inputFile.files[0].name)
     console.log(inputFile?.files);
+    
+    
+    
   }
 
   const removeFile = () => {
@@ -47,4 +52,8 @@ const UploadFile = () => {
   );
 }
 
-export default UploadFile;
+
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentFile: (file) => dispatch(setCurrentFile(file))
+})
+export default connect(null, mapDispatchToProps)(UploadFile);

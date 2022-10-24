@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useEffect, useRef } from "react";
 import { Stack, Form, Button } from "react-bootstrap";
 import EmojiPicker from "emoji-picker-react";
 
@@ -9,14 +9,21 @@ import { connect } from "react-redux";
 import Details from "../../chatroom/details/details.component";
 import Messages from "../../chatroom/messages/message-history.component";
 import UploadFile from "../../chatroom/uploadfile/button-uploadfile.componenet";
+import { useContext } from "react";
+import { WebSocketContext } from "../../../context/appContext";
 
 function Chat({ currentRoom, currentUser }) {
-
-
-  console.log(currentRoom)
+  
   const [pickerOpen, togglePicker] = React.useReducer((state) => !state, false);
-
   const [input, setInput] = useState("");
+  const messageEndRef = useRef(null)
+  const { stompClient } = useContext(WebSocketContext);
+
+  function scrollToBottom(){
+    messageEndRef.current?.scrollIntoView({behavior: "smooth"})
+  }
+ 
+
 
   const onEmojiClick = (event, emojiObject) => {
     setInput(input + event.emoji);
@@ -28,21 +35,24 @@ function Chat({ currentRoom, currentUser }) {
     } else {
       setInput(input.slice(0, -1));
     }
-    console.log(e);
-    console.log(input);
   };
 
-  const onSubmit = () => {
-    //! code for sending a msg, get the current roomName via redux 
-    // if(stompClient){
-    //     const chatMessage = {
-    //         senderName: userData.username,
-    //         receiverName: userData.receiverName,
-    //         message: userData.message,
-    //         status: "MESSAGE",
-    //     }
-    //     stompClient.send("/kachat/messages"+ roomName, {}, JSON.stringify(chatMessage))
-    }
+  const onSubmit = (e) => {
+    //! make sure this wont send unless its subscribed
+    e.preventDefault(); 
+    if (stompClient) {
+       const chatMessage = {
+        room: currentRoom.room_id,
+        user: currentUser.user_id,
+        status: "MESSAGE",
+        content: input,
+      };
+      stompClient.send("/kachat/messages/" + currentRoom.room_id,{},JSON.stringify(chatMessage));
+      setInput("")
+   }
+    scrollToBottom()
+
+  };
 
   return (
     <Stack className="right_container m-0 gap-2">
@@ -52,8 +62,8 @@ function Chat({ currentRoom, currentUser }) {
         </h4>
         <Details />
       </div>
-      <Messages className="messages" />
-
+      <Messages className="messages"/>
+      <div ref={messageEndRef} />
       <div className="input d-grid gap-2 d-flex align-items-center justify-content-start">
         <UploadFile />
         <Button variant="light" type="" onClick={togglePicker}>
@@ -74,18 +84,18 @@ function Chat({ currentRoom, currentUser }) {
             value={input}
             placeholder="Enter  Message"
           />
-          <Button variant="primary" type="submit" onClick={onSubmit} >
+          <Button variant="primary" type="submit" onClick={onSubmit}>
             <i className="bi bi-send-fill"></i>
           </Button>
         </Form>
       </div>
     </Stack>
   );
-};
+}
 
-const mapStateToProps = ({user, room}) => ({
+const mapStateToProps = ({ user, room }) => ({
   currentUser: user.currentUser,
-  currentRoom: room.currentRoom
+  currentRoom: room.currentRoom,
 });
 
 export default connect(mapStateToProps)(Chat);

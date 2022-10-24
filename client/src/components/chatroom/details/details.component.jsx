@@ -51,8 +51,8 @@ function Details({currentUser, currentRoom}) {
                     </ListGroup>
                 </Modal.Body>
                 <Modal.Footer>
-                    { currentRoom.owner.username != currentUser.username ? 
-                    <LeaveChatRoom onClick={handleClose} user_id={currentUser.user_id} room_id={currentRoom.room_id} /> : null}
+                    {/* { currentRoom.owner.username != currentUser.username ? 
+                    <LeaveChatRoom onClick={handleClose} user_id={currentUser.user_id} room_id={currentRoom.room_id} /> : null} */}
                 </Modal.Footer>
             </Modal>
         </>
