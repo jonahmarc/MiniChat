@@ -9,14 +9,14 @@ const fileReducer = (state = INITIAL_STATE, action) => {
     case FileActionTypes.SET_CURRENT_FILE:
         return {
             ...state,
-            currentUser: action.payload
+            currentFile: action.payload
           };
         case FileActionTypes.FILE_SENT:
           console.log("File Sent")
           storage.removeItem('persist:primary')
           return {
             ...state,
-            currentUser: null
+            currentFile: null
           }
         default:
           return state;

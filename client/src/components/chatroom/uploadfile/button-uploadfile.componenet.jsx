@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button, CloseButton } from "react-bootstrap";
+import { Button, CloseButton, Form } from "react-bootstrap";
 import { setCurrentFile } from "../../../redux/folder/file.action";
 import { connect } from "react-redux";
+import { ConnectingAirportsOutlined } from "@mui/icons-material";
 
 const UploadFile = ({setCurrentFile}) => {
 
@@ -12,15 +13,29 @@ const UploadFile = ({setCurrentFile}) => {
   }, [])
 
   const handleUpload = () => {
+    console.log('HANDLE UPLOAD')
     console.log(inputFile);
     inputFile?.click()
+    
   }
-  const handleDisplayFileDetails = () => {
+ 
+  const onSubmit = (e) => {
+
+  }
+  const handleDisplayFileDetails = (e) => {
+    
+    
+    
     inputFile?.files && setUploadedFileName(inputFile.files[0].name)
-    console.log(inputFile?.files);
-    
-    
-    
+
+    console.log("HANDLE DISPLAY FILE",inputFile?.files);
+
+    console.log("INPUT FILE: ", inputFile)
+
+    const data = new FormData()
+    data.append('file',inputFile?.files)
+    console.log('FORM: ',data)
+
   }
 
   const removeFile = () => {
@@ -30,7 +45,7 @@ const UploadFile = ({setCurrentFile}) => {
   }
 
   return (
-    <div className="m-0 d-grid gap-1 d-flex align-items-center">
+    <Form className="m-0 d-grid gap-1 d-flex align-items-center" method="post" action="#" id="#" onSubmit={onSubmit}>
       <input
         id="input-file"
         onChange={handleDisplayFileDetails}
@@ -48,7 +63,7 @@ const UploadFile = ({setCurrentFile}) => {
       {uploadedFileName && (
         <CloseButton onClick={removeFile} />
       )}
-    </div>
+    </Form>
   );
 }
 

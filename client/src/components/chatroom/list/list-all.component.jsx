@@ -98,7 +98,7 @@ function RoomsListAll ({ setCurrentRoom, currentUser, currentRoom}){
                       <h6>{room.name}</h6>
                     </blockquote>
                     <figcaption class="blockquote-footer m-0 p-0">
-                      {room.owner.username}
+                      {room.owner.display_name}
                     </figcaption>
                 </figure>
                 {room.locked ? <i className="ms-auto bi bi-lock-fill"></i> : <i className="ms-auto bi bi-unlock"></i>}

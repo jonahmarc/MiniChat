@@ -3,20 +3,31 @@
 .messages_history {
     height: 100%;
     overflow-y: auto;
-    background-color: #FCFCFF;
+    background-color: #ECF0F1;
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
         
 
     .received {
-        width: 50%;
-        background-color: white;
+        max-width: 70%;
+        background-color: #dcddf1;
         box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+        width: -moz-fit-content;
+        width: fit-content;
+        border-radius: 10px;
+        overflow-wrap: break-word;
     }
 
     .sent {
-        width: 50%;
-        background-color: $primary;
+        max-width: 70%;
+        //background-color: $primary;
+        
+        background-color:#4444b3;
         color: white;
         box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+        width: -moz-fit-content;
+        width: fit-content;
+        border-radius: 10px;
+        overflow-wrap: break-word;
     }
+    
 }

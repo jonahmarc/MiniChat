@@ -7,6 +7,7 @@ import WelcomeComponent from '../../components/rightcomponent/welcome/welcome.co
 import { connect } from "react-redux";
 
 function Main({ currentRoom }) {
+    console.log("CURRENT ROOM: " , currentRoom)
     
     return (
         <div className="main_container">
@@ -17,6 +18,7 @@ function Main({ currentRoom }) {
                     currentRoom ? <Chat className="right_container"/> :
                                 <WelcomeComponent  className="right_container" />
                 }
+               
                 
             </div>
         </div>

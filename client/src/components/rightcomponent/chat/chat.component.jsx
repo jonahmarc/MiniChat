@@ -41,14 +41,14 @@ function Chat({ currentRoom, currentUser }) {
     //! make sure this wont send unless its subscribed
     e.preventDefault(); 
     if (stompClient) {
-       const chatMessage = {
+       if(input !== ''){const chatMessage = {
         room: currentRoom.room_id,
         user: currentUser.user_id,
         status: "MESSAGE",
         content: input,
       };
       stompClient.send("/kachat/messages/" + currentRoom.room_id,{},JSON.stringify(chatMessage));
-      setInput("")
+      setInput("")}
    }
     scrollToBottom()
 

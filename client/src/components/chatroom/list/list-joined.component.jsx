@@ -28,31 +28,11 @@ function RoomsListJoined ({ setCurrentRoom, currentUser,setCurrentMessage}){
     }
   }, [isLoading, roomData]);
   
-  const onMessageReceived = (payload) => {
-    // console.log(payload)
-    // const payloadData = JSON.parse(payload.body)
-    // console.log(payloadData)
-    // const payloadData = JSON.parse(payload.body)
-    // setCurrentMessage(payloadData.body.data)
-  //  const payloadData = JSON.parse(payload.body)
-  //   console.log("MESSAGE: ",payloadData.body.data)
-   //setCurrentMessage(payloadData.body.data)
-    
-  }
-
-  // const onSubscribe = (roomId) => {
-  //   stompClient.subscribe("/chatroom/"+roomId,onMessageReceived())
-  // }
-
   const selectRoom = (room) => {
     setCurrentRoom(room)
     console.log(room.room_id)
     window.location.reload()
 
-   // onSubscribe(room.room_id)
-    
-
-    
   }
 
   return (
@@ -72,7 +52,7 @@ function RoomsListJoined ({ setCurrentRoom, currentUser,setCurrentMessage}){
                     <h6>{room.name}</h6>
                     </blockquote>
                     <figcaption class="blockquote-footer m-0 p-0">
-                    {room.owner.username}
+                    {room.owner.display_name}
                     </figcaption>
                 </figure>
                 {room.locked ? <i className="ms-auto bi bi-lock-fill"></i> : <i class="ms-auto bi bi-unlock"></i>}
